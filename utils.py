@@ -6,6 +6,8 @@ from dataclasses import dataclass
 class Constants:
     # Armored Core 3 constants
     GAME_NAME: str = "Armored Core 3"
+    CLIENT_NAME: str = "Armored Core 3 Client"
+    AC3_GAME_ID = "SLUS-20435"
 
     CREDIT_ITEM_NAME: str = "Bonus Credits"
     #ToDo just do a region list or something like that
@@ -21,29 +23,30 @@ class Constants:
     REGION_FOURTH_ENERGY: str = "4th Layer: Energy Production"
     REGION_LAYERED_HUB: str = "Layered Hub"
 
+    ADDR_CURRENT_MENU: int = 0x5CB101
     ADDR_CREDITS: int = 0x5BE030
-    ADDR_MISSION_COMPLETION : int = 0x5BE061
-    ADDR_MISSION_RANK : int = 0x5BE0A1
-    ADDR_INVENTORY: int = 0x5b2021 #value = how many times you own the part, useful for some back units
-    ADDR_SHOP: int = 0x5b2821   #parts are in the same order as in inventory ToDo further testing
+    ADDR_MISSION_COMPLETION : int = 0x5BE060
+    ADDR_MISSION_RANK : int = 0x5BE0A0
+    ADDR_INVENTORY: int = 0x5B2021 #value = how many times you own the part, useful for some back units
+    ADDR_SHOP: int = 0x5B2821   #parts are in the same order as in inventory
                                 #0 = bought/not in shop; value = times it can be bought; if you buy an Item it reduces the value by 1
 
+    #You can probably do this way simpler. But I don't want to invest more time into finding better addresses or trying assembly, for now I will come back someday maybe idk
+    #The Mission list and length addresses are rewritten to default values everytime you enter Mission from the Menu
+    ADDR_MISSION_LIST_LAYERED_HUB: int = 0x19BC280
+    ADDR_MISSION_LIST_FOURTH_ENERGY: int = 0x19BC380
+    ADDR_MISSION_LIST_SECOND_WASTE: int = 0x19BC280
+    ADDR_MISSION_LIST_FIRST_DISTRICT2: int = 0x19BC580
+    ADDR_MISSION_LIST_THIRD_INDUSTRIAL: int = 0x19BC680
+    ADDR_MISSION_LIST_FIRST_SPECIAL: int = 0x19BC780
+    ADDR_MISSION_LIST_THIRD_DISTRICT1: int = 0x19BC880
+    ADDR_MISSION_LIST_FIRST_NATURE: int = 0x19BC980
 
-
-
-
-#Not needed anymore, will get deleted after I tested most stuff
-#    ADDR_INVENTORY_HEAD :int = 0x5b2021
-#    ADDR_INVENTORY_CORE :int = 0x5b2061
-#    ADDR_INVENTORY_ARMS:int = 0x5b20a1
-#    ADDR_INVENTORY_LEGS :int = 0x5b20e1
-#    ADDR_INVENTORY_BOOSTER: int = 0x5b2121
-#    ADDR_INVENTORY_FCS: int = 0x5b2161
-#    ADDR_INVENTORY_GENERATOR: int = 0x5b21a1
-#    ADDR_INVENTORY_RADIATOR: int = 0x5b21e1
-#    ADDR_INVENTORY_INSIDE: int = 0x5b2221
-#    ADDR_INVENTORY_EXTENSIONS: int = 0x5b2261
-#    ADDR_INVENTORY_BACK: int = 0x5b22a1
-#    ADDR_INVENTORY_ARM_R: int = 0x5b22e1
-#    ADDR_INVENTORY_ARM_L: int = 0x5b2321
-#    ADDR_INVENTORY_OPTIONALS: int = 0x5b2361
+    ADDR_LIST_LENGTH_LAYERED_HUB: int = 0x19BC2AA
+    ADDR_LIST_LENGTH_FOURTH_ENERGY: int = 0x19BC3AA
+    ADDR_LIST_LENGTH_SECOND_WASTE: int = 0x19BC4AA
+    ADDR_LIST_LENGTH_FIRST_DISTRICT2: int = 0x19BC5AA
+    ADDR_LIST_LENGTH_THIRD_INDUSTRIAL: int = 0x19BC6AA
+    ADDR_LIST_LENGTH_FIRST_SPECIAL: int = 0x19BC7AA
+    ADDR_LIST_LENGTH_THIRD_DISTRICT1: int = 0x19BC8AA
+    ADDR_LIST_LENGTH_FIRST_NATURE: int = 0x19BC9AA
