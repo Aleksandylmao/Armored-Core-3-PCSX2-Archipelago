@@ -2,10 +2,10 @@ import asyncio, multiprocessing, traceback
 from collections.abc import Sequence
 from argparse import Namespace
 
-from CommonClient import CommonContext, ClientCommandProcessor, get_base_parser, handle_url_arg, server_loop, logger
+from CommonClient import CommonContext, ClientCommandProcessor, get_base_parser, handle_url_arg, server_loop, logger, gui_enabled
 from .mission import all_missions
 from .parts import all_parts, all_part_ids
-from .pcsx2_interface import AC3Interface
+from .pcsx2_interface import AC3Interface, ConnectionStatus
 from NetUtils import ClientStatus
 
 from .utils import Constants
@@ -58,24 +58,23 @@ class AC3Context(CommonContext):
         ui.logging_pairs = [("Client", "Archipelago")]
         return ui
 
-
 async def interface_sync_task(ctx):
-    ctx.player_instruction("Beginning communication with PCSX2...")
-    logger.info("Beginning communication with PCSX2...")
-    print("about to connect")
-
     while not ctx.exit_event.is_set():
-        if not ctx.interface.connected:
-            print("about to connect")
-            ctx.interface.connect_game()
-            print("connect returned")
-        await asyncio.sleep(0.1) # Poll rate
         try:
-            if ctx.interface.connected:
+            if not ctx.interface.is_connected():
+                ctx.interface.connect_game()
+            await asyncio.sleep(0.1) # Poll rate
+
+            if ctx.interface.is_connected():
                 await check_game(ctx)
             else:
-                await reconnect_game(ctx)
-                logger.info("Game reconnected")
+                status = ctx.interface.status
+                if status == ConnectionStatus.AC3_NOT_DETECTED:
+                    ctx.player_instruction("Waiting for Armored Core 3 to be loaded.")
+                elif status == ConnectionStatus.DISCONNECTED:
+                    ctx.player_instruction("Waiting for PCSX2 to open.")
+                await asyncio.sleep(3)
+
         except ConnectionError:
             ctx.interface.disconnected()
         except Exception as e:
@@ -87,6 +86,11 @@ async def interface_sync_task(ctx):
             continue
 
 async def check_game(ctx) -> None:
+    if not ctx.interface.check_ac3_loaded() == ConnectionStatus.IN_GAME:
+        ctx.player_instruction("You lost the connection to Armored Core 3.")
+        ctx.connection_state = "none"
+        return
+
     if not ctx.server:
         ctx.player_instruction("You are not currently connected to an Archipelago server. Connect now!")
         ctx.connection_state = "none"
@@ -106,7 +110,6 @@ async def check_game(ctx) -> None:
         return
 
     ctx.player_instruction("Connected and ready to play.")
-    # Detect and send new location checks
     new_locations = ctx.interface.completed_missions.difference(ctx.previously_checked_locations)
 
     if new_locations:
@@ -153,16 +156,14 @@ async def check_game(ctx) -> None:
         ctx.processed_items += 1
     ctx.interface.enforce_game_state()
 
-async def reconnect_game(ctx : AC3Context):
-    logger.info("Communication with PCSX2 failed. Please ensure that PCSX2 is open and Ape Escape 2 is loaded.")
-    ctx.interface.connect_game()
-    await asyncio.sleep(3)
-
 async def main(args: Namespace) -> None:
+    multiprocessing.freeze_support()
+
     ctx = AC3Context(args.connect, args.password)
     ctx.auth = args.name
     ctx.server_task = asyncio.create_task(server_loop(ctx), name="server loop")
-    ctx.run_gui()
+    if gui_enabled:
+        ctx.run_gui()
     ctx.run_cli()
 
     ctx.interface_sync_task = asyncio.create_task(interface_sync_task(ctx), name="PCSX2 Sync")
