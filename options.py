@@ -1,10 +1,47 @@
 from dataclasses import dataclass
 
 from Options import Choice, OptionGroup, PerGameCommonOptions, Range, DefaultOnToggle, Toggle as DefaultOffToggle
+#If anyone is reading this check out Armored Core 1 APWorld it's sick
+class Goal(Choice):
+    """
+    Choose what you want your goal to be.
+    In missionsanity all missions are individually added to the pool of checks,
+    you set the number of missions that you must complete in order to complete your goal.
+    In progressive missions you receive 'progressive mission' items that unlock groups of
+    5 missions at a time. Your goal is completing Infiltrate Layered Hub after collecting
+    all 'progressive mission' items.
+    """
+    display_name = "Goal"
+    option_missionsanity = 0
+    option_progressive_missions = 1
+    default = 0
 
-#YES I really like how the AC1 ap works that's why took a lot of "inspiration"
-# ToDo ask for permission(?) and for a review after I'm done
-# ToDo Ai should take a look at what I write, my god...
+class MissionsanityGoalRequirement(Range):
+    """
+    When Goal is Missionsanity.
+    How many missions must be completed to win.
+    """
+    display_name = "Missionsanity Goal Requirement"
+    range_start = 1
+    range_end = 49
+    default = 49
+
+class CreditCheckAmount(Range):
+    """
+    Define how much you earn from Credit Filler checks you receieve.
+    """
+    display_name = "Credit Check Amount"
+    range_start = 1000
+    range_end = 100000
+    default = 10000
+
+@dataclass
+class AC3Options(PerGameCommonOptions):
+    goal: Goal
+    missionsanity_goal_requirement: MissionsanityGoalRequirement
+    credit_check_amount: CreditCheckAmount
+#Those below are just Ideas that I had I don't know if those Ideas are great or not, I'm not sure
+#Ai should take a look at what I write, my god...
 """class Goal(Choice):
     
     Choose which one will be your Goal.
@@ -103,13 +140,10 @@ from Options import Choice, OptionGroup, PerGameCommonOptions, Range, DefaultOnT
     range_end = 146
     default = 4"""
 
-class IncludeOpIntensify(DefaultOffToggle):
-    """
-    If this option is on, OP-INTENSIFY will be added to the item pool.
-    """
-    display_name = "Include OP-INTENSIFY"
+#This one might be its own Goal option honestly, since you need to complete little side missions with OP-INTENSIFY equipped
+"""class IncludeOpIntensify(DefaultOffToggle):
 
-@dataclass
-class AC3Options(PerGameCommonOptions):
-     #goal: Goal
-     include_op_intensify: IncludeOpIntensify
+    If this option is on, OP-INTENSIFY will be added to the item pool.
+
+    display_name = "Include OP-INTENSIFY"""
+

@@ -3,7 +3,8 @@ from collections.abc import Sequence
 from argparse import Namespace
 
 from CommonClient import CommonContext, ClientCommandProcessor, get_base_parser, handle_url_arg, server_loop, logger, gui_enabled
-from .mission import all_missions
+from . import options, world
+from .mission import all_missions, all_mission_ids
 from .parts import all_parts, all_part_ids
 from .pcsx2_interface import AC3Interface, ConnectionStatus
 from NetUtils import ClientStatus
@@ -57,6 +58,24 @@ class AC3Context(CommonContext):
         ui.base_title = f"Archipelago {Constants.GAME_NAME}"
         ui.logging_pairs = [("Client", "Archipelago")]
         return ui
+
+def get_goal_target_count(ctx) -> int:
+    if ctx.slot_data.get("goal") == options.Goal.option_missionsanity:
+        return ctx.slot_data.get("missionsanity_goal_amount", 20)
+    return len(all_missions) - 1 #Progressive Mission
+
+async def check_goal(ctx) -> None:
+    if ctx.finished_game:
+        return
+
+    if ctx.slot_data.get("goal") == options.Goal.option_missionsanity:
+        reached = len(ctx.interface.completed_missions) >= get_goal_target_count(ctx)
+    else:  #Progressive Mission
+        reached = (Constants.ADDR_MISSION_COMPLETION + all_missions[-1].id) in ctx.interface.completed_missions
+
+    if reached:
+        await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
+
 
 async def interface_sync_task(ctx):
     while not ctx.exit_event.is_set():
@@ -122,8 +141,10 @@ async def check_game(ctx) -> None:
             "operations": [{"operation": "replace", "value": list(ctx.interface.completed_missions)}],
         }])
         ctx.previously_checked_locations.update(new_locations)
+    await check_goal(ctx)
 
     #Receive and apply items
+    received_missions =[]
     for i in range(len(ctx.items_received)):
         if i < ctx.processed_items:
             continue  #already handled this session
@@ -132,28 +153,28 @@ async def check_game(ctx) -> None:
         item_id = server_item.item
 
         #Idempotent unlocks: safe to re-apply every reconnect
-        if item_id == Constants.ADDR_MISSION_COMPLETION+all_missions[-1].id: #Victory location for now
-            await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
-        elif item_id - Constants.ADDR_INVENTORY in all_part_ids:
+        if item_id - Constants.ADDR_INVENTORY in all_part_ids:
             ctx.interface.unlock_part(item_id)
-
+        elif item_id in all_mission_ids:
+            received_missions.append(item_id)
         #Non-idempotent / consumable items: only apply items beyond
         #what Data Storage says we already processed last session
-        if ctx.previously_processed_items != -1 and ctx.previously_processed_items < i:
+        if ctx.previously_processed_items < i:
             if item_id == Constants.ADDR_CREDITS:
-                ctx.interface.queued_credits += 10000
-
-            ctx.previously_processed_items = i
-            if ctx.interface.queued_credits > 0:
-                await ctx.send_msgs([{
-                    "cmd": "Set",
-                    "key": f"ac3_processed_{ctx.team}_{ctx.slot}",
-                    "default": 0,
-                    "want_reply": False,
-                    "operations": [{"operation": "replace", "value": ctx.previously_processed_items}],
-                }])
+                ctx.interface.queued_credits += ctx.slot_data["credit_check_amount"]
+                print(ctx.slot_data["credit_check_amount"])
+                ctx.previously_processed_items = i
+                if ctx.interface.queued_credits > 0:
+                    await ctx.send_msgs([{
+                        "cmd": "Set",
+                        "key": f"ac3_processed_{ctx.team}_{ctx.slot}",
+                        "default": 0,
+                        "want_reply": False,
+                        "operations": [{"operation": "replace", "value": ctx.previously_processed_items}],
+                    }])
 
         ctx.processed_items += 1
+    ctx.interface.unlock_mission(received_missions)
     ctx.interface.enforce_game_state()
 
 async def main(args: Namespace) -> None:

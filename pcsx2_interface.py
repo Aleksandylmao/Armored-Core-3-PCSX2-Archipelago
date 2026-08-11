@@ -1,9 +1,9 @@
 
 from enum import Enum
 
-from worlds.armoredcore3.mission import all_missions
+from worlds.armoredcore3.mission import all_missions, id_to_mission
 from worlds.armoredcore3.pine import Pine
-from worlds.armoredcore3.utils import Constants
+from worlds.armoredcore3.utils import Constants, MISSION_REGIONS_BY_NAME
 
 
 class ConnectionStatus(Enum):
@@ -20,6 +20,7 @@ class AC3Interface:
         self.connected = False
         self.status = ConnectionStatus.DISCONNECTED
         self.completed_missions = set()
+        self.received_missions: set[int] = set()
         self.queued_credits: int = 0
 
     def connect_game(self) -> ConnectionStatus:
@@ -40,26 +41,6 @@ class AC3Interface:
 
         return self.check_ac3_loaded()
 
-    def disconnect_game(self) -> None:
-        self.pine.disconnect()
-        self.status = ConnectionStatus.DISCONNECTED
-
-    def check_completed_missions(self) -> None:
-        for mission in all_missions:
-            completed = self.pine.read_int8(mission.id + Constants.ADDR_MISSION_COMPLETION)
-            if completed in (2, 6):
-                self.completed_missions.add(mission.id+Constants.ADDR_MISSION_COMPLETION)
-
-
-    def unlock_part(self, part_id:int) -> None:
-        self.pine.write_int8(part_id,0x01)
-
-    def enforce_game_state(self) -> None:
-        self.check_completed_missions()
-
-    def is_connected(self) -> bool:
-        return self.status == ConnectionStatus.IN_GAME
-
     def check_ac3_loaded(self) -> ConnectionStatus:
         try:
             game_id = self.pine.get_game_id()
@@ -72,6 +53,53 @@ class AC3Interface:
         except Exception as e:
             self.status = ConnectionStatus.AC3_NOT_DETECTED
             return self.status
-def main():
-    interface = AC3Interface
-    interface.connect_game()
+
+    def disconnect_game(self) -> None:
+        self.pine.disconnect()
+        self.status = ConnectionStatus.DISCONNECTED
+
+    def check_completed_missions(self) -> None:
+        for mission in all_missions:
+            completed = self.pine.read_int8(mission.id + Constants.ADDR_MISSION_COMPLETION)
+            if completed in (2, 6):
+                self.completed_missions.add(mission.id+Constants.ADDR_MISSION_COMPLETION)
+
+    def unlock_mission(self, mission_ids: list[int]) -> None:
+        if not mission_ids and not self.received_missions:
+            return
+
+        counts = {name: 0 for name in MISSION_REGIONS_BY_NAME}
+
+        self.received_missions.update(mission_ids)
+        self.pine.write_int8(Constants.ADDR_LOADING_ALL_MISSIONS,1)
+
+        for mission_id in self.received_missions:
+            mission = id_to_mission[mission_id]
+            region = MISSION_REGIONS_BY_NAME.get(mission.region)
+            if region is None:
+                continue
+            counts[mission.region] += 1
+            slot = counts[mission.region]
+
+            self.pine.write_int8(region.mission_list_addr + slot - 1, mission_id)
+            self.pine.write_int8(region.list_length_addr, slot)
+
+        for name, region in MISSION_REGIONS_BY_NAME.items():
+            if counts[name] == 0:
+                self.pine.write_int8(region.list_length_addr, 0x00)
+
+    def apply_credits(self) -> None:
+        credit = self.queued_credits
+        self.queued_credits = 0
+        credit += self.pine.read_int32(Constants.ADDR_CREDITS)
+        self.pine.write_int32(Constants.ADDR_CREDITS, credit)
+
+    def unlock_part(self, part_id:int) -> None:
+        self.pine.write_int8(part_id,0x01)
+
+    def enforce_game_state(self) -> None:
+        self.check_completed_missions()
+        self.apply_credits()
+
+    def is_connected(self) -> bool:
+        return self.status == ConnectionStatus.IN_GAME

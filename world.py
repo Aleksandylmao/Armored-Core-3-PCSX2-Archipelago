@@ -37,5 +37,7 @@ class AC3World(World):
 
 	def fill_slot_data(self) -> Mapping[str, Any]:
 		return self.options.as_dict(
-			"include_op_intensify"
+			"goal",
+			"missionsanity_goal_requirement",
+			"credit_check_amount",
 		)
