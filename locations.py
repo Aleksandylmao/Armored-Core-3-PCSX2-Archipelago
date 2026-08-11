@@ -25,7 +25,7 @@ mission_location_name_to_id: dict[str, int] = {}
 for mission in all_missions:
     mission_location_name_to_id[get_location_name_for_mission_completed(mission)] = get_location_id_for_mission_completed_id(mission.id)
 
-#ToDo: Testing for ranks 
+#Testing for ranks
 #mission_rank_location_name_to_id: dict[str, int] = {}
 #i = all_missions[-1].id +2
 #for mission in all_missions:
