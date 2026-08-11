@@ -25,17 +25,17 @@ mission_location_name_to_id: dict[str, int] = {}
 for mission in all_missions:
     mission_location_name_to_id[get_location_name_for_mission_completed(mission)] = get_location_id_for_mission_completed_id(mission.id)
 
-mission_rank_location_name_to_id: dict[str, int] = {}
-
-"""i = all_missions[-1].id +2
-for mission in all_missions:
-    for rank in all_ranks:
-        mission_rank_location_name_to_id[get_location_name_for_mission_rank(mission,rank.name)] = i
-        i=i+1"""
+#ToDo: Testing for ranks 
+#mission_rank_location_name_to_id: dict[str, int] = {}
+#i = all_missions[-1].id +2
+#for mission in all_missions:
+ #   for rank in all_ranks:
+  #      mission_rank_location_name_to_id[get_location_name_for_mission_rank(mission,rank.name)] = i
+   #     i=i+1
 
 LOCATION_NAME_TO_ID: dict[str, int]
 LOCATION_NAME_TO_ID = mission_location_name_to_id
-LOCATION_NAME_TO_ID.update(mission_rank_location_name_to_id.copy())
+#LOCATION_NAME_TO_ID.update(mission_rank_location_name_to_id.copy())
 
 def get_location_names_with_ids(location_names: list[str]) -> dict[str, int | None]:
     return {location_name: LOCATION_NAME_TO_ID[location_name] for location_name in location_names}
@@ -59,7 +59,7 @@ def create_regular_locations(world: AC3World) -> None:
     location_to_add: dict[str, int] ={}
 
     for name, id in mission_location_name_to_id.items():
-        if not world.options.goal == options.Goal.option_missionsanity and name == LOCATION_NAME_TO_ID[get_location_name_for_mission_completed(all_missions[-1])]:
+        if not world.options.goal == options.Goal.option_missionsanity and name == get_location_name_for_mission_completed(all_missions[-1]):
             continue
 
         location_to_add[name] = id

@@ -337,7 +337,8 @@ all_optionals: typing.Tuple[Optional, ...] = (
 )
 
 all_parts: typing.Tuple[Part, ...] = (all_heads+	all_cores+	all_arms+	all_legs+	all_boosters+	all_fcs+
-									  all_generators+	all_radiators+	all_back_units+	all_back_units+	all_arm_units_r+	all_arm_units_l)
+									  all_generators+	all_radiators+	all_back_units+	all_arm_units_r+
+									  all_arm_units_l+ all_optionals +all_insides+all_extensions)
 all_part_ids = {part.id for part in all_parts}
 base_starting_parts = {all_heads[0],
 					all_cores[0],

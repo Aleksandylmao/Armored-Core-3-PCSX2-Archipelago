@@ -3,7 +3,6 @@ from collections.abc import Sequence
 from argparse import Namespace
 
 from CommonClient import CommonContext, ClientCommandProcessor, get_base_parser, handle_url_arg, server_loop, logger, gui_enabled
-from . import options, world
 from .mission import all_missions, all_mission_ids
 from .parts import all_parts, all_part_ids
 from .pcsx2_interface import AC3Interface, ConnectionStatus
@@ -60,15 +59,13 @@ class AC3Context(CommonContext):
         return ui
 
 def get_goal_target_count(ctx) -> int:
-    if ctx.slot_data.get("goal") == options.Goal.option_missionsanity:
-        return ctx.slot_data.get("missionsanity_goal_amount", 20)
-    return len(all_missions) - 1 #Progressive Mission
+    return ctx.slot_data.get("missionsanity_goal_requirement", 20)
 
 async def check_goal(ctx) -> None:
     if ctx.finished_game:
         return
 
-    if ctx.slot_data.get("goal") == options.Goal.option_missionsanity:
+    if ctx.slot_data.get("goal") == 0: #Missionsanity
         reached = len(ctx.interface.completed_missions) >= get_goal_target_count(ctx)
     else:  #Progressive Mission
         reached = (Constants.ADDR_MISSION_COMPLETION + all_missions[-1].id) in ctx.interface.completed_missions
@@ -162,16 +159,16 @@ async def check_game(ctx) -> None:
         if ctx.previously_processed_items < i:
             if item_id == Constants.ADDR_CREDITS:
                 ctx.interface.queued_credits += ctx.slot_data["credit_check_amount"]
-                print(ctx.slot_data["credit_check_amount"])
-                ctx.previously_processed_items = i
-                if ctx.interface.queued_credits > 0:
-                    await ctx.send_msgs([{
-                        "cmd": "Set",
-                        "key": f"ac3_processed_{ctx.team}_{ctx.slot}",
-                        "default": 0,
-                        "want_reply": False,
-                        "operations": [{"operation": "replace", "value": ctx.previously_processed_items}],
-                    }])
+
+            ctx.previously_processed_items = i
+            if ctx.interface.queued_credits > 0:
+                await ctx.send_msgs([{
+                    "cmd": "Set",
+                    "key": f"ac3_processed_{ctx.team}_{ctx.slot}",
+                    "default": 0,
+                    "want_reply": False,
+                    "operations": [{"operation": "replace", "value": ctx.previously_processed_items}],
+                }])
 
         ctx.processed_items += 1
     ctx.interface.unlock_mission(received_missions)

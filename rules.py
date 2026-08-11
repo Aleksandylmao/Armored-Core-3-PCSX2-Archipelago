@@ -41,18 +41,6 @@ def set_all_location_rules(world: AC3World) -> None:
         world.set_rule(location, Has(mission.name))
 
 def set_completion_condition(world: AC3World) -> None:
-    non_starting = [m.name for m in all_missions if m != STARTING_MISSION]
-    if world.options.goal == Goal.option_missionsanity:
-        amount = world.options.missionsanity_goal_amount.value
-        world.multiworld.completion_condition[world.player] = (
-            lambda state, names=non_starting, n=amount, p=world.player:
-            sum(state.has(name, p) for name in names) >= n)
-    else:  # vanilla
-        final_mission = all_missions[-1]
-        world.multiworld.completion_condition[world.player] = (
-            lambda state, name=final_mission.name, p=world.player: state.has(name, p)
-        )
-def set_completion_condition(world: AC3World) -> None:
     player = world.player
 
     if world.options.goal == Goal.option_missionsanity:

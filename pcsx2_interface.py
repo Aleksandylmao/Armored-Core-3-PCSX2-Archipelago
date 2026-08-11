@@ -14,8 +14,7 @@ class ConnectionStatus(Enum):
 
 class AC3Interface:
 
-    def __init__(self, logger, slot: int = 28011):
-        self.logger = logger
+    def __init__(self, slot: int = 28011):
         self.pine = Pine(slot)
         self.connected = False
         self.status = ConnectionStatus.DISCONNECTED

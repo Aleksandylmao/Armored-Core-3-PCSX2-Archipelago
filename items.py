@@ -16,9 +16,10 @@ class AC3Item(Item):
 ITEM_NAME_TO_ID: typing.Dict[str, int] = {Constants.CREDIT_ITEM_NAME: Constants.ADDR_CREDITS}
 item_id_to_item_name: typing.Dict[int, str] = {Constants.ADDR_CREDITS: Constants.CREDIT_ITEM_NAME}
 
-"""for part in all_parts:
-    item_id_to_item_name[part.id+ Constants.ADDR_INVENTORY] = part.name
-    ITEM_NAME_TO_ID[part.name] = part.id+ Constants.ADDR_INVENTORY"""
+#enable when adding parts, change the structure maybe i#m not sure right nwo
+#for part in all_parts:
+#    item_id_to_item_name[part.id+ Constants.ADDR_INVENTORY] = part.name
+#    ITEM_NAME_TO_ID[part.name] = part.id+ Constants.ADDR_INVENTORY
 
 for mission in all_missions:
     item_id_to_item_name[mission.id] = mission.name

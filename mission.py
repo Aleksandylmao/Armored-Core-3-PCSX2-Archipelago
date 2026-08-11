@@ -42,14 +42,14 @@ class Mission:
 #   0x04 - Rank A
 #   0x05 - Rank S
 
-all_ranks = {
+all_ranks:typing.Tuple[Rank,...] = (
     Rank(0x0, "E"),
     Rank(0x1, "D"),
     Rank(0x2, "C"),
     Rank(0x3, "B"),
     Rank(0x4, "A"),
     Rank(0x5, "S"),
-}
+)
 #I decided against null iteration because those are the IDs that are used in game4
 all_missions: typing.Tuple[Mission, ...] = (
     Mission(0x1, "Raven Test",Constants.REGION_FIRST_DISTRICT2),
