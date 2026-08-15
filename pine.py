@@ -81,6 +81,11 @@ class Pine:
         self._sock_state: bool = False
         # self._init_socket()
 
+    def set_slot(self, slot: int) -> None:
+        if not 0 < slot <= 65536:
+            raise ValueError("Provided slot number is outside valid range")
+        self._slot = slot
+
     def is_wsl(self) -> bool:
         if system() != "Linux":
             return False

@@ -1,12 +1,13 @@
 from dataclasses import dataclass
 
 from Options import Choice, PerGameCommonOptions, Range
-#If anyone is reading this check out Armored Core 1 APWorld it's sick
+#If anyone is reading this check out Armored Core 1 APWorld and Armored Core 6 APWorld
 class Goal(Choice):
     """
     Choose what you want your goal to be.
     In missionsanity all missions are individually added to the pool of checks,
     you set the number of missions that you must complete in order to complete your goal.
+
     In progressive missions you receive 'progressive mission' items that unlock groups of
     5 missions at a time. Your goal is completing Infiltrate Layered Hub after collecting
     all 'progressive mission' items.
@@ -14,11 +15,11 @@ class Goal(Choice):
     display_name = "Goal"
     option_missionsanity = 0
     option_progressive_missions = 1
-    default = 0
+    default = 1
 
 class MissionsanityGoalRequirement(Range):
     """
-    When Goal is Missionsanity.
+    When goal is missionsanity.
     How many missions must be completed to win.
     """
     display_name = "Missionsanity Goal Requirement"
