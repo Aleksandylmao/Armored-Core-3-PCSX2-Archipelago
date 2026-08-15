@@ -33,7 +33,7 @@ class AC3World(World):
 		return items.create_item_with_correct_classification(self, name)
 
 	def get_filler_item_name(self) -> str:
-		return Constants.CREDIT_ITEM_NAME
+		return Constants.ITEM_CREDIT_NAME
 
 	def fill_slot_data(self) -> Mapping[str, Any]:
 		return self.options.as_dict(

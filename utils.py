@@ -18,9 +18,9 @@ class Constants:
     GAME_NAME: str = "Armored Core 3"
     CLIENT_NAME: str = "Armored Core 3 Client"
     AC3_GAME_ID = "SLUS-20435"
-
-    CREDIT_ITEM_NAME: str = "Bonus Credits"
-    #ToDo just do a region list or something like that
+    ITEM_PROGRESSIVE_MISSION_NAME ="Progressive Mission"
+    UNLOCKS_PER_PROGRESSIVE_MISSION = 5 #If I ever do an option I just need to refactor this
+    ITEM_CREDIT_NAME: str = "Bonus Credits"
     REGION_MENU: str ="Menu"
     REGION_ARENA: str ="Arena Menu"
     REGION_MISSION_LIST: str ="Mission Menu"
@@ -48,11 +48,12 @@ class Constants:
     ADDR_LOADING_ALL_MISSIONS: int = 0x5BE034
     ADDR_CURRENT_MENU: int = 0x5CB101
     ADDR_CREDITS: int = 0x5BE030
+    ADDR_MAIL: int = 0x5BE0E0 #Bit 7 - Has been read
     ADDR_MISSION_COMPLETION : int = 0x5BE060
     ADDR_MISSION_RANK : int = 0x5BE0A0
     ADDR_INVENTORY: int = 0x5B2021 #value = how many times you own the part, useful for some back units
     ADDR_SHOP: int = 0x5B2821   #parts are in the same order as in inventory
-                                #0 = bought/not in shop; value = times it can be bought; if you buy an Item it reduces the value by 1
+                                #value -times it can be bought; if you buy an Item it reduces the value by 1, 0 = bought/not in shop
 
     #You can probably do this way simpler. But I don't want to invest more time into finding better addresses or trying assembly, for now I will come back someday maybe idk
     #The Mission list and length addresses are rewritten to default values everytime you enter Mission from the Menu

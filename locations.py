@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from BaseClasses import Location
 from . import items, options
 from .utils import Constants
-from .mission import Mission, all_missions, all_ranks, id_to_mission
+from .mission import Mission, all_missions, FINAL_MISSION
 
 if TYPE_CHECKING:
     from .world import AC3World
@@ -25,17 +25,8 @@ mission_location_name_to_id: dict[str, int] = {}
 for mission in all_missions:
     mission_location_name_to_id[get_location_name_for_mission_completed(mission)] = get_location_id_for_mission_completed_id(mission.id)
 
-#Testing for ranks
-#mission_rank_location_name_to_id: dict[str, int] = {}
-#i = all_missions[-1].id +2
-#for mission in all_missions:
- #   for rank in all_ranks:
-  #      mission_rank_location_name_to_id[get_location_name_for_mission_rank(mission,rank.name)] = i
-   #     i=i+1
-
 LOCATION_NAME_TO_ID: dict[str, int]
 LOCATION_NAME_TO_ID = mission_location_name_to_id
-#LOCATION_NAME_TO_ID.update(mission_rank_location_name_to_id.copy())
 
 def get_location_names_with_ids(location_names: list[str]) -> dict[str, int | None]:
     return {location_name: LOCATION_NAME_TO_ID[location_name] for location_name in location_names}
@@ -55,11 +46,11 @@ def create_regular_locations(world: AC3World) -> None:
     fourth_energy_production = world.get_region(Constants.REGION_FOURTH_ENERGY)
     layered_hub = world.get_region(Constants.REGION_LAYERED_HUB)
 
-    # ToDo add region for missions so that I can do Region Shuffle
+    # ToDo Add the missions to the regions
     location_to_add: dict[str, int] ={}
 
     for name, id in mission_location_name_to_id.items():
-        if not world.options.goal == options.Goal.option_missionsanity and name == get_location_name_for_mission_completed(all_missions[-1]):
+        if not world.options.goal == options.Goal.option_missionsanity and name == get_location_name_for_mission_completed(FINAL_MISSION):
             continue
 
         location_to_add[name] = id
@@ -69,5 +60,5 @@ def create_regular_locations(world: AC3World) -> None:
 def create_events(world: AC3World) -> None:
     mission_list = world.get_region(Constants.REGION_MISSION_LIST)
     if world.options.goal == options.Goal.option_progressive_missions:
-        mission_list.add_event(get_location_name_for_mission_completed(all_missions[-1]),"Victory", location_type=AC3Location,item_type=items.AC3Item)
+        mission_list.add_event(get_location_name_for_mission_completed(FINAL_MISSION),"Victory", location_type=AC3Location,item_type=items.AC3Item)
 

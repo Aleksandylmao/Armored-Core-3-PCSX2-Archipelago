@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from Options import Choice, OptionGroup, PerGameCommonOptions, Range, DefaultOnToggle, Toggle as DefaultOffToggle
+from Options import Choice, PerGameCommonOptions, Range
 #If anyone is reading this check out Armored Core 1 APWorld it's sick
 class Goal(Choice):
     """

@@ -3,8 +3,8 @@ from collections.abc import Sequence
 from argparse import Namespace
 
 from CommonClient import CommonContext, ClientCommandProcessor, get_base_parser, handle_url_arg, server_loop, logger, gui_enabled
-from .mission import all_missions, all_mission_ids
-from .parts import all_parts, all_part_ids
+from .mission import all_missions, all_mission_ids, progressive_mission, all_missions_by_order, FINAL_MISSION
+from .parts import all_part_ids
 from .pcsx2_interface import AC3Interface, ConnectionStatus
 from NetUtils import ClientStatus
 
@@ -19,11 +19,12 @@ class AC3Context(CommonContext):
     game = Constants.GAME_NAME
     items_handling = 0b111
     interface_sync_task : asyncio.Task = None
+    progressive_mission_count = 0
 
     def __init__(self, server_address, password):
         super().__init__(server_address, password)
         self.written_item_indexes: set[int] = set()
-        self.interface = AC3Interface(self)
+        self.interface = AC3Interface()
         self.most_recent_instruction = None
 
     def on_package(self, cmd: str, args: dict):
@@ -68,7 +69,7 @@ async def check_goal(ctx) -> None:
     if ctx.slot_data.get("goal") == 0: #Missionsanity
         reached = len(ctx.interface.completed_missions) >= get_goal_target_count(ctx)
     else:  #Progressive Mission
-        reached = (Constants.ADDR_MISSION_COMPLETION + all_missions[-1].id) in ctx.interface.completed_missions
+        reached = (Constants.ADDR_MISSION_COMPLETION + FINAL_MISSION.id) in ctx.interface.completed_missions
 
     if reached:
         await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
@@ -104,7 +105,6 @@ async def interface_sync_task(ctx):
 async def check_game(ctx) -> None:
     if not ctx.interface.check_ac3_loaded() == ConnectionStatus.IN_GAME:
         ctx.player_instruction("You lost the connection to Armored Core 3.")
-        ctx.connection_state = "none"
         return
 
     if not ctx.server:
@@ -152,8 +152,13 @@ async def check_game(ctx) -> None:
         #Idempotent unlocks: safe to re-apply every reconnect
         if item_id - Constants.ADDR_INVENTORY in all_part_ids:
             ctx.interface.unlock_part(item_id)
-        elif item_id in all_mission_ids:
-            received_missions.append(item_id)
+        elif item_id - Constants.ADDR_MISSION_COMPLETION in all_mission_ids:
+            received_missions.append(item_id- Constants.ADDR_MISSION_COMPLETION)
+        elif item_id == progressive_mission.id and ctx.previously_processed_items < i:
+            ctx.previously_processed_items = i
+            ctx.progressive_mission_count +=1
+
+
         #Non-idempotent / consumable items: only apply items beyond
         #what Data Storage says we already processed last session
         if ctx.previously_processed_items < i:
@@ -171,6 +176,10 @@ async def check_game(ctx) -> None:
                 }])
 
         ctx.processed_items += 1
+    for x in range(ctx.progressive_mission_count * Constants.UNLOCKS_PER_PROGRESSIVE_MISSION):
+        if x < len(all_missions):
+            received_missions.append(all_missions_by_order[x].id)
+
     ctx.interface.unlock_mission(received_missions)
     ctx.interface.enforce_game_state()
 
