@@ -4,6 +4,7 @@ from argparse import Namespace
 
 from CommonClient import CommonContext, ClientCommandProcessor, get_base_parser, handle_url_arg, server_loop, logger, gui_enabled
 from .mission import all_missions, all_mission_ids, progressive_mission, all_missions_by_order, FINAL_MISSION
+from .options import Goal
 from .parts import all_part_ids
 from .pcsx2_interface import AC3Interface, ConnectionStatus
 from NetUtils import ClientStatus
@@ -19,7 +20,6 @@ class AC3Context(CommonContext):
     game = Constants.GAME_NAME
     items_handling = 0b111
     interface_sync_task : asyncio.Task = None
-    progressive_mission_count = 0
 
     def __init__(self, server_address, password):
         super().__init__(server_address, password)
@@ -66,7 +66,7 @@ async def check_goal(ctx) -> None:
     if ctx.finished_game:
         return
 
-    if ctx.slot_data.get("goal") == 0: #Missionsanity
+    if ctx.slot_data.get("goal") == Goal.option_missionsanity:
         reached = len(ctx.interface.completed_missions) >= get_goal_target_count(ctx)
     else:  #Progressive Mission
         reached = (Constants.ADDR_MISSION_COMPLETION + FINAL_MISSION.id) in ctx.interface.completed_missions
@@ -154,10 +154,6 @@ async def check_game(ctx) -> None:
             ctx.interface.unlock_part(item_id)
         elif item_id - Constants.ADDR_MISSION_COMPLETION in all_mission_ids:
             received_missions.append(item_id- Constants.ADDR_MISSION_COMPLETION)
-        elif item_id == progressive_mission.id and ctx.previously_processed_items < i:
-            ctx.previously_processed_items = i
-            ctx.progressive_mission_count +=1
-
 
         #Non-idempotent / consumable items: only apply items beyond
         #what Data Storage says we already processed last session
@@ -176,12 +172,15 @@ async def check_game(ctx) -> None:
                 }])
 
         ctx.processed_items += 1
-    for x in range(ctx.progressive_mission_count * Constants.UNLOCKS_PER_PROGRESSIVE_MISSION):
+    for x in range(get_progressive_mission_count(ctx) * Constants.UNLOCKS_PER_PROGRESSIVE_MISSION):
         if x < len(all_missions):
             received_missions.append(all_missions_by_order[x].id)
 
     ctx.interface.unlock_mission(received_missions)
     ctx.interface.enforce_game_state()
+
+def get_progressive_mission_count(ctx) -> int:
+    return sum(1 for it in ctx.items_received if it.item == progressive_mission.id)
 
 async def main(args: Namespace) -> None:
     multiprocessing.freeze_support()

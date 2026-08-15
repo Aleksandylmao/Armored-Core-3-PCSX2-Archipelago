@@ -58,4 +58,4 @@ def set_completion_condition(world: AC3World) -> None:
         world.multiworld.completion_condition[player] = AtLeast(
             amount,*(Has(mission) for mission in non_starting),).resolve(world)
     else: #Progressive mission
-        world.multiworld.completion_condition[player] = Has("Victory").resolve(world)
+        world.multiworld.completion_condition[player] = Has(Constants.ITEM_VICTORY).resolve(world)

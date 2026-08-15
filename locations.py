@@ -37,16 +37,6 @@ def create_all_locations(world: AC3World) -> None:
 
 def create_regular_locations(world: AC3World) -> None:
     mission_list = world.get_region(Constants.REGION_MISSION_LIST)
-    first_district2 = world.get_region(Constants.REGION_FIRST_DISTRICT2)
-    third_industrial_research = world.get_region(Constants.REGION_THIRD_INDUSTRIAL)
-    third_district1 = world.get_region(Constants.REGION_THIRD_DISTRICT1)
-    first_nature_area = world.get_region(Constants.REGION_FIRST_NATURE)
-    first_special_research = world.get_region(Constants.REGION_FIRST_SPECIAL)
-    second_waste_disposal = world.get_region(Constants.REGION_SECOND_WASTE)
-    fourth_energy_production = world.get_region(Constants.REGION_FOURTH_ENERGY)
-    layered_hub = world.get_region(Constants.REGION_LAYERED_HUB)
-
-    # ToDo Add the missions to the regions
     location_to_add: dict[str, int] ={}
 
     for name, id in mission_location_name_to_id.items():
@@ -60,5 +50,5 @@ def create_regular_locations(world: AC3World) -> None:
 def create_events(world: AC3World) -> None:
     mission_list = world.get_region(Constants.REGION_MISSION_LIST)
     if world.options.goal == options.Goal.option_progressive_missions:
-        mission_list.add_event(get_location_name_for_mission_completed(FINAL_MISSION),"Victory", location_type=AC3Location,item_type=items.AC3Item)
+        mission_list.add_event(get_location_name_for_mission_completed(FINAL_MISSION),Constants.ITEM_VICTORY, location_type=AC3Location,item_type=items.AC3Item)
 

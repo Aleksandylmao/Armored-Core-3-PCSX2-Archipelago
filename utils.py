@@ -18,9 +18,12 @@ class Constants:
     GAME_NAME: str = "Armored Core 3"
     CLIENT_NAME: str = "Armored Core 3 Client"
     AC3_GAME_ID = "SLUS-20435"
+
     ITEM_PROGRESSIVE_MISSION_NAME ="Progressive Mission"
     UNLOCKS_PER_PROGRESSIVE_MISSION = 5 #If I ever do an option I just need to refactor this
     ITEM_CREDIT_NAME: str = "Bonus Credits"
+    ITEM_VICTORY:str = "Victory"
+
     REGION_MENU: str ="Menu"
     REGION_ARENA: str ="Arena Menu"
     REGION_MISSION_LIST: str ="Mission Menu"
