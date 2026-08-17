@@ -12,7 +12,7 @@
 - [Analog Controls](https://github.com/VanLaser/analog-controls-for-armored-core-ps2?tab=readme-ov-file#qol-enhancements-analog-controls-for-armored-core-ps2-series-ac2-ac2-another-age-ac3-ac-silent-line)
 
 ## Installing the World
-1. Download `armored_core_3.apworld` from the [releases](https://github.com/Aleksandylmao/Armored-Core-3-PCSX2-Archipelago/releases) page.
+1. Download `armoredcore3.apworld` from the [releases](https://github.com/Aleksandylmao/Armored-Core-3-PCSX2-Archipelago/releases) page.
 2. Double-click it, drag it onto `ArchipelagoLauncher.exe` or put it in your Archipelago/lib/worlds folder.
 
 ## Generating
