@@ -3,7 +3,7 @@
 Armored Core 3 is a 2002 third-person shooter video game developed by FromSoftware for the PlayStation 2.
 It is the sixth entry in the Armored Core series.
 
-APWorld developed by me. Available to download in the [releases](https://github.com/Aleksandylmao/Armored-Core-3-PCSX2-Archipelago/releases)  section!
+Available to download in the [releases](https://github.com/Aleksandylmao/Armored-Core-3-PCSX2-Archipelago/releases)  section!
 
 ## [Randomizer Info](docs/en_Armored%20Core%203.md)
 
