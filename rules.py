@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
-from rule_builder.rules import AtLeast, Has
+from rule_builder.rules import Has
 
 from .locations import get_location_name_for_mission_completed
 from .regions import get_region_connection_name
@@ -55,8 +55,6 @@ def set_completion_condition(world: AC3World) -> None:
             if mission != STARTING_MISSION
         ]
         amount = world.options.missionsanity_goal_requirement.value
-
-        world.multiworld.completion_condition[player] = AtLeast(
-            amount,*(Has(mission) for mission in non_starting),).resolve(world)
+        world.multiworld.completion_condition[player] = lambda state: (sum(state.has(mission, player) for mission in non_starting) >= amount)
     else: #Progressive mission
         world.multiworld.completion_condition[player] = Has(Constants.ITEM_VICTORY).resolve(world)
