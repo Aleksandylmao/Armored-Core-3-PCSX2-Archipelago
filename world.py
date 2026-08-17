@@ -1,23 +1,22 @@
 from collections.abc import Mapping
 from typing import Any
 from worlds.AutoWorld import World
-from . import items, locations, regions, rules, web_world
-from .options import AC3Options
-from .utils import Constants
 
+from . import items, locations, regions, rules, web_world, utils
+from . import options as armored_core_3_options
 class AC3World(World):
 	"""
 	Armored Core 3 is a 2002 third-person shooter video game developed by FromSoftware for the PlayStation 2.
 	It is the sixth entry in the Armored Core series.
 	"""
 
-	game = Constants.GAME_NAME
+	game = utils.Constants.GAME_NAME
 	web = web_world.AC3Web()
-	options_dataclass = AC3Options
+	options_dataclass = armored_core_3_options.AC3Options
 	location_name_to_id = locations.LOCATION_NAME_TO_ID
 	item_name_to_id = items.ITEM_NAME_TO_ID
 
-	origin_region_name = Constants.REGION_MENU
+	origin_region_name = utils.Constants.REGION_MENU
 
 	def create_regions(self) -> None:
 		regions.create_and_connect_regions(self)
@@ -33,7 +32,7 @@ class AC3World(World):
 		return items.create_item_with_correct_classification(self, name)
 
 	def get_filler_item_name(self) -> str:
-		return Constants.ITEM_CREDIT_NAME
+		return utils.Constants.ITEM_CREDIT_NAME
 
 	def fill_slot_data(self) -> Mapping[str, Any]:
 		return self.options.as_dict(

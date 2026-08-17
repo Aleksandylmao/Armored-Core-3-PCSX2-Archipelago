@@ -1,14 +1,13 @@
 import asyncio, multiprocessing, traceback
 from collections.abc import Sequence
 from argparse import Namespace
+from NetUtils import ClientStatus
 
 from CommonClient import CommonContext, ClientCommandProcessor, get_base_parser, handle_url_arg, server_loop, logger, gui_enabled
 from .mission import all_missions, all_mission_ids, progressive_mission, all_missions_by_order, FINAL_MISSION
 from .options import Goal
 from .parts import all_part_ids
 from .pcsx2_interface import AC3Interface, ConnectionStatus
-from NetUtils import ClientStatus
-
 from .utils import Constants
 
 class AC3CommandProcessor(ClientCommandProcessor):
@@ -202,7 +201,7 @@ async def main(args: Namespace) -> None:
     if ctx.interface_sync_task:
         await asyncio.sleep(3)
         await ctx.interface_sync_task
-    
+
 
 def launch_ac3_client(*args: Sequence[str]) -> None:
     import colorama

@@ -1,6 +1,6 @@
 import typing
 
-from worlds.armoredcore3.utils import Constants
+from .utils import Constants
 
 class Rank:
     id: int

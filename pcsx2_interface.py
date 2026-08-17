@@ -1,9 +1,8 @@
-
 from enum import Enum
 
-from worlds.armoredcore3.mission import all_missions, id_to_mission
-from worlds.armoredcore3.pine import Pine
-from worlds.armoredcore3.utils import Constants, MISSION_REGIONS_BY_NAME
+from .mission import all_missions, id_to_mission
+from .pine import Pine
+from .utils import Constants, MISSION_REGIONS_BY_NAME
 
 
 class ConnectionStatus(Enum):

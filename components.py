@@ -1,5 +1,5 @@
 from worlds.LauncherComponents import Component, Type, components, launch
-from worlds.armoredcore3.utils import Constants
+from .utils import Constants
 
 
 def run_client(*args: str) -> None:

@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-
 from Options import Choice, PerGameCommonOptions, Range
 #If anyone is reading this check out Armored Core 1 APWorld and Armored Core 6 APWorld
 class Goal(Choice):

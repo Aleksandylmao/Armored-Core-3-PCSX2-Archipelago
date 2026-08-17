@@ -1,14 +1,15 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from rule_builder.rules import AtLeast, Has
+
 from .locations import get_location_name_for_mission_completed
 from .regions import get_region_connection_name
 from .utils import Constants
 from .options import Goal
 from .mission import all_missions, STARTING_MISSION, progressive_mission, all_missions_by_order
-from rule_builder.rules import AtLeast, Has
 if TYPE_CHECKING:
-    from worlds.armoredcore3 import AC3World
+    from .world import AC3World
 
 
 def set_all_rules(world: AC3World) -> None:

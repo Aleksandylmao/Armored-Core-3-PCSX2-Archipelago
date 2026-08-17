@@ -14,4 +14,3 @@ class AC3Web(WebWorld):
             ["Aleksandy"],
         )
     tutorials = [setup_en]
-

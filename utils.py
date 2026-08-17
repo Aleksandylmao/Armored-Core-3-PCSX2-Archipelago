@@ -1,4 +1,4 @@
-import typing
+from typing import Dict, Tuple
 
 from dataclasses import dataclass
 
@@ -20,7 +20,7 @@ class Constants:
     AC3_GAME_ID = "SLUS-20435"
 
     ITEM_PROGRESSIVE_MISSION_NAME ="Progressive Mission"
-    UNLOCKS_PER_PROGRESSIVE_MISSION = 5 #If I ever do an option I just need to refactor this
+    UNLOCKS_PER_PROGRESSIVE_MISSION = 5
     ITEM_CREDIT_NAME: str = "Bonus Credits"
     ITEM_VICTORY:str = "Victory"
 
@@ -35,7 +35,7 @@ class Constants:
     REGION_SECOND_WASTE: str = "2nd Layer: Waste Disposal"
     REGION_FOURTH_ENERGY: str = "4th Layer: Energy Production"
     REGION_LAYERED_HUB: str = "Layered Hub"
-    all_regions: typing.Tuple[str,...] = (
+    all_regions: Tuple[str,...] = (
         REGION_MENU,
         REGION_ARENA,
         REGION_MISSION_LIST,
@@ -78,7 +78,7 @@ class Constants:
     ADDR_LIST_LENGTH_THIRD_DISTRICT1: int = 0x19BC8AA
     ADDR_LIST_LENGTH_FIRST_NATURE: int = 0x19BC9AA
 
-    MISSION_REGIONS: typing.Tuple[MissionRegion, ...] =(
+    MISSION_REGIONS: Tuple[MissionRegion, ...] =(
         MissionRegion(
             REGION_FIRST_DISTRICT2,
             ADDR_MISSION_LIST_FIRST_DISTRICT2,
@@ -121,4 +121,4 @@ class Constants:
         ),
     )
 
-MISSION_REGIONS_BY_NAME: typing.Dict[str, MissionRegion] = {mr.name: mr for mr in Constants.MISSION_REGIONS}
+MISSION_REGIONS_BY_NAME: Dict[str, MissionRegion] = {mr.name: mr for mr in Constants.MISSION_REGIONS}

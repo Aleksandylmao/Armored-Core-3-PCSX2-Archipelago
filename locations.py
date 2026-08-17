@@ -1,10 +1,10 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from BaseClasses import Location
+
 from . import items, options
 from .utils import Constants
 from .mission import Mission, all_missions, FINAL_MISSION
-
 if TYPE_CHECKING:
     from .world import AC3World
 
