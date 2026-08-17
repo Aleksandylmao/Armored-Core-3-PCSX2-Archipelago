@@ -21,7 +21,7 @@ Acknowledgements
 ---
 Thank you to these projects for helping me make this Archipelago Implementation possible:
 - The Archipelago Core Team and Contributors
-- evilwb's [pypine}(https://github.com/evilwb/pypine)
+- evilwb's [pypine](https://github.com/evilwb/pypine)
 - [Armored Core APWorld](https://github.com/JustinMarshall98/Armored-Core-PSX-Archipelago/releases)  which got me to play the older games again and inspired me to make this APWorld 
 
 Support
