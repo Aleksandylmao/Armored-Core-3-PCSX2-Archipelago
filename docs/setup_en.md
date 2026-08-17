@@ -6,7 +6,7 @@
 - [The Armored Core 3 apworld](https://github.com/Aleksandylmao/Armored-Core-3-PCSX2-Archipelago/releases) 
 - [PCSX2 Emulator](https://pcsx2.net/downloads/)
 - A legally-obtained Armored Core 3 ISO 
-	-NTSC-U, SLUS-20435 
+	- NTSC-U, SLUS-20435 
 	
 ## Optional 
 - [Analog Controls](https://github.com/VanLaser/analog-controls-for-armored-core-ps2?tab=readme-ov-file#qol-enhancements-analog-controls-for-armored-core-ps2-series-ac2-ac2-another-age-ac3-ac-silent-line)
