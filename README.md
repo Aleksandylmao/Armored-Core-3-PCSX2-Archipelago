@@ -11,7 +11,7 @@ Available to download in the [releases](https://github.com/Aleksandylmao/Armored
 -----
 ### Prerequisites:
 - [Archipelago](https://github.com/ArchipelagoMW/Archipelago/releases/latest)
-- [The Armored Core 3 apworld](https://github.com/Aleksandylmao/Armored-Core-3-PCSX2-Archipelago/releases) 
+- [The Armored Core 3 APWorld](https://github.com/Aleksandylmao/Armored-Core-3-PCSX2-Archipelago/releases) 
 - [PCSX2 Emulator](https://pcsx2.net/downloads/)
 - A legally-obtained Armored Core 3 ISO 
 	- NTSC-U, SLUS-20435 
@@ -22,6 +22,7 @@ Acknowledgements
 Thank you to these projects for helping me make this Archipelago Implementation possible:
 - The Archipelago Core Team and Contributors
 - evilwb's [pypine](https://github.com/evilwb/pypine)
+- [thatbard's](https://retroachievements.org/user/thatbard) [Armored Core 3 RetroAchievements](https://retroachievements.org/game/3308) for providing some Memory Addresses .
 - [Armored Core APWorld](https://github.com/JustinMarshall98/Armored-Core-PSX-Archipelago/releases)  which got me to play the older games again and inspired me to make this APWorld 
 
 Support
