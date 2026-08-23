@@ -3,10 +3,12 @@ import typing
 class Part:
 	id: int
 	name: str
+	amount: int #Some back Units can be obtained multiple times
 
-	def __init__(self, _id: int, name: str):
+	def __init__(self, _id: int, name: str, amount =1):
 		self.id = _id
 		self.name = name
+		self.amount = amount
 
 
 class Head(Part):
@@ -215,42 +217,42 @@ all_extensions: typing.Tuple[Extension, ...] = (
 )
 
 class BackUnit(Part):
-	def __init__(self, _id: int, name: str):
-		super().__init__(_id, name)
+	def __init__(self, _id: int, name: str, amount = 1):
+		super().__init__(_id, name,amount)
 
 all_back_units: typing.Tuple[BackUnit, ...] = (
-	BackUnit(0x280, "CWM-S40-1"),
-	BackUnit(0x281, "MWM-S42/6"),
-	BackUnit(0x282, "CWM-S60-10"),
-	BackUnit(0x283, "MWM-S60/12"),
-	BackUnit(0x284, "MWM-M24/2"),
-	BackUnit(0x285, "CWM-M36-4"),
-	BackUnit(0x286, "CWM-VM36-4"),
-	BackUnit(0x287, "MWM-DM24/1"),
-	BackUnit(0x288, "MWM-MM16/1"),
-	BackUnit(0x289, "CWM-GM14-1"),
-	BackUnit(0x28A, "CWM-TITAN"),
-	BackUnit(0x28B, "CWR-S50"),
-	BackUnit(0x28C, "CWR-S80"),
-	BackUnit(0x28D, "CWR-M30"),
-	BackUnit(0x28E, "MWR-M/45"),
-	BackUnit(0x28F, "MWR-TM/60"),
-	BackUnit(0x290, "CWR-HECTO"),
-	BackUnit(0x291, "CWC-CNG-300"),
-	BackUnit(0x292, "CWC-SLU-64"),
-	BackUnit(0x293, "CWC-GNS-15"),
-	BackUnit(0x294, "CWC-GNL-15"),
-	BackUnit(0x295, "MWC-IR./20"),
-	BackUnit(0x296, "MWC-LQ/35"),
-	BackUnit(0x297, "MWC-XP/80"),
-	BackUnit(0x298, "MWC-XP/75"),
-	BackUnit(0x299, "MWC-OC/15"),
-	BackUnit(0x29A, "CM-AD-10"),
-	BackUnit(0x29B, "MM-AD/20"),
-	BackUnit(0x29C, "CRU-A10"),
-	BackUnit(0x29D, "CRU-A102"),
-	BackUnit(0x29E, "MRL-MM/009"),
-	BackUnit(0x29F, "MRL-RE/111"),
+	BackUnit(0x280, "CWM-S40-1",2),
+	BackUnit(0x281, "MWM-S42/6",2),
+	BackUnit(0x282, "CWM-S60-10",2),
+	BackUnit(0x283, "MWM-S60/12",2),
+	BackUnit(0x284, "MWM-M24/2",2),
+	BackUnit(0x285, "CWM-M36-4",2),
+	BackUnit(0x286, "CWM-VM36-4",2),
+	BackUnit(0x287, "MWM-DM24/1",2),
+	BackUnit(0x288, "MWM-MM16/1",2),
+	BackUnit(0x289, "CWM-GM14-1",2),
+	BackUnit(0x28A, "CWM-TITAN",2),
+	BackUnit(0x28B, "CWR-S50",2),
+	BackUnit(0x28C, "CWR-S80",2),
+	BackUnit(0x28D, "CWR-M30",2),
+	BackUnit(0x28E, "MWR-M/45",2),
+	BackUnit(0x28F, "MWR-TM/60",2),
+	BackUnit(0x290, "CWR-HECTO",2),
+	BackUnit(0x291, "CWC-CNG-300",2),
+	BackUnit(0x292, "CWC-SLU-64",2),
+	BackUnit(0x293, "CWC-GNS-15",2),
+	BackUnit(0x294, "CWC-GNL-15",2),
+	BackUnit(0x295, "MWC-IR./20",2),
+	BackUnit(0x296, "MWC-LQ/35",2),
+	BackUnit(0x297, "MWC-XP/80",2),
+	BackUnit(0x298, "MWC-XP/75",2),
+	BackUnit(0x299, "MWC-OC/15",2),
+	BackUnit(0x29A, "CM-AD-10",2),
+	BackUnit(0x29B, "MM-AD/20",2),
+	BackUnit(0x29C, "CRU-A10",2),
+	BackUnit(0x29D, "CRU-A102",2),
+	BackUnit(0x29E, "MRL-MM/009",2),
+	BackUnit(0x29F, "MRL-RE/111",2),
 	BackUnit(0x2A0, "MRL-SS/SPHERE"),
 	BackUnit(0x2A1, "MWX-VM20/1"),
 	BackUnit(0x2A2, "CWX-DM-32-1"),

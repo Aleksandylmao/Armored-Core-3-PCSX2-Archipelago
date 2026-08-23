@@ -55,9 +55,35 @@ class Constants:
     ADDR_MAIL: int = 0x5BE0E0 #Bit 7 - Has been read
     ADDR_MISSION_COMPLETION : int = 0x5BE060
     ADDR_MISSION_RANK : int = 0x5BE0A0
+
     ADDR_INVENTORY: int = 0x5B2021 #value = how many times you own the part, useful for some back units
-    ADDR_SHOP: int = 0x5B2821   #parts are in the same order as in inventory
-                                #value -times it can be bought; if you buy an Item it reduces the value by 1, 0 = bought/not in shop
+    ADDR_FUNC_DISABLE_SELL_ASSEMBLY_MENU: int = 0x002AE990 #Instruct those two function instantly return
+    ADDR_FUNC_DISABLE_SELL_OPTIONAL_PART_MENU: int = 0x002B1E38 #Bytes: 03E00008 Instruction: jr ra
+
+    #I was unable to figure out how to easily change the description of the shop items
+    #The Strings get loaded from the disc and I don't know how to edit those on the disc
+    #I can try to edit them before they get loaded into the ui but that would not be consistent
+    #Therefore Shop Descriptions ain't implemented as of right now
+    #ToDo: Shop Descriptions
+    ADDR_SHOP: int = 0x5B2821   #same order as inventory; 0 = bought/not in shop; value > 0 times it can be bought
+    ADDR_INSTR_DISABLE_ADDING_TO_INVENTORY: int = 0x002863AC #nop this
+    #The shop item names have a max length of 18 characters
+    OFFSET_SHOP_NAME: int = 0x18
+    ADDR_SHOP_NAME_HEAD: int = 0x1344B34
+    ADDR_SHOP_NAME_CORE: int = 0x1344E4C
+    ADDR_SHOP_NAME_ARM: int = 0x1345164
+    ADDR_SHOP_NAME_LEG: int = 0x134577C
+    ADDR_SHOP_NAME_BOOSTER: int = 0x1345D94
+    ADDR_SHOP_NAME_FCS: int = 0x13460AC
+    ADDR_SHOP_NAME_GENERATOR: int = 0x13463C4
+    ADDR_SHOP_NAME_RADIATOR: int = 0x13466DC
+    ADDR_SHOP_NAME_INSIDE: int = 0x13469F4
+    ADDR_SHOP_NAME_EXTENSION: int = 0x1346D0C
+    ADDR_SHOP_NAME_BACK_UNIT: int = 0x1347024
+    ADDR_SHOP_NAME_ARM_UNIT_R: int = 0x134763C
+    ADDR_SHOP_NAME_ARM_UNIT_L: int = 0x1347C54
+    ADDR_SHOP_NAME_OPTIONAL_PARTS: int = 0x1347F6C
+
 
     #You can probably do this way simpler. But I don't want to invest more time into finding better addresses or trying assembly, for now I will come back someday maybe idk
     #The Mission list and length addresses are rewritten to default values everytime you enter Mission from the Menu

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from Options import Choice, PerGameCommonOptions, Range
+from Options import Choice, PerGameCommonOptions, Range, Toggle
 #If anyone is reading this check out Armored Core 1 APWorld and Armored Core 6 APWorld
 class Goal(Choice):
     """
@@ -34,6 +34,52 @@ class CreditCheckAmount(Range):
     range_start = 1000
     range_end = 100000
     default = 10000
+
+class IncludeMissionRanks(Toggle):
+    """
+    Each Rank you can achieve in a Mission will be its own Location.
+    """
+    display_name = "Include Mission Ranks"
+
+class ExcludeMissionRanks(Choice):
+    """
+    Choose what achievable ranks should be excluded.
+    If you choose Rank A, Rank A and Rank S will be excluded.
+    """
+    display_name = "Exclude Mission Ranks"
+    none = 0
+    rank_s = 1
+    rank_a = 2
+    rank_b = 3
+    rank_c = 4
+    rank_d = 5
+    rank_e = 6
+    default = 1
+
+class Shopsanity(Toggle):
+    """
+    Shopsanity turns all parts listings in the shop into locations,
+    and all parts that you don't start with are shuffled into the multiworld.
+    """
+    display_name = "Shopsanity"
+
+class ShopsanityListingsPerMission(Range):
+    """
+    Define how many shop listings open up per mission completion.
+    Higher numbers may require more grinding. Includes Raven Test.
+    """
+    display_name = "Shopsanity Listings Per Mission"
+    range_start = 4
+    range_end = 146
+    default = 4
+
+class ShuffleParts(Toggle):
+    """
+    If you choose against Shopsanity.
+    All parts that you don't start with are shuffled into the multiworld.
+    And the shop will be disabled.
+    """
+    display_name = "Shuffle Parts"
 
 @dataclass
 class AC3Options(PerGameCommonOptions):
