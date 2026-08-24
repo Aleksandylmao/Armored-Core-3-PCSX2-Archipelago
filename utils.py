@@ -50,6 +50,7 @@ class Constants:
     )
     ADDR_LOADING_ALL_MISSIONS: int = 0x5BE034
     ADDR_CURRENT_MENU: int = 0x5CB101
+    ADDR_PREVIOUS_MENU:int = 0x5CB102
     ADDR_CREDITS: int = 0x5BE030
     ADDR_MAIL: int = 0x5BE0E0 #Bit 7 - Has been read
     ADDR_MISSION_COMPLETION : int = 0x5BE060

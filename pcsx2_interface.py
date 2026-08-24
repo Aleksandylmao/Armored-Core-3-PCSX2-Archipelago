@@ -1,6 +1,6 @@
 from enum import Enum
 
-from .mission import all_missions, id_to_mission
+from .mission import all_missions, id_to_mission, STARTING_MISSION
 from .pine import Pine
 from .utils import Constants, MISSION_REGIONS_BY_NAME
 
@@ -58,7 +58,7 @@ class AC3Interface:
 
     def check_completed_missions(self) -> None:
         for mission in all_missions:
-            completed = self.pine.read_int8(mission.id + Constants.ADDR_MISSION_COMPLETION)
+            completed = self.pine.read_int8_unsigned(mission.id + Constants.ADDR_MISSION_COMPLETION)
             if completed in (2, 6):
                 self.completed_missions.add(mission.id+Constants.ADDR_MISSION_COMPLETION)
 
@@ -69,7 +69,7 @@ class AC3Interface:
         counts = {name: 0 for name in MISSION_REGIONS_BY_NAME}
 
         self.received_missions.update(mission_ids)
-        self.pine.write_int8(Constants.ADDR_LOADING_ALL_MISSIONS,1)
+        self.pine.write_int8_unsigned(Constants.ADDR_LOADING_ALL_MISSIONS,1)
 
         for mission_id in self.received_missions:
             mission = id_to_mission[mission_id]
@@ -79,21 +79,27 @@ class AC3Interface:
             counts[mission.region] += 1
             slot = counts[mission.region]
 
-            self.pine.write_int8(region.mission_list_addr + slot - 1, mission_id)
-            self.pine.write_int8(region.list_length_addr, slot)
+            self.pine.write_int8_unsigned(region.mission_list_addr + slot - 1, mission_id)
+            self.pine.write_int8_unsigned(region.list_length_addr, slot)
 
         for name, region in MISSION_REGIONS_BY_NAME.items():
             if counts[name] == 0:
-                self.pine.write_int8(region.list_length_addr, 0x00)
+                self.pine.write_int8_unsigned(region.list_length_addr, 0x00)
 
     def apply_credits(self) -> None:
+        if self.queued_credits == 0:
+            return
+        if (self.pine.read_int8_signed(Constants.ADDR_CURRENT_MENU) != 0 #Garage/Default Menu ID
+                and self.pine.read_int8_signed(Constants.ADDR_MISSION_COMPLETION+ STARTING_MISSION.id) == 0): #Ravens test must be completed otherwise you are not ingame
+            return
+
         credit = self.queued_credits
         self.queued_credits = 0
-        credit += self.pine.read_int32(Constants.ADDR_CREDITS)
-        self.pine.write_int32(Constants.ADDR_CREDITS, credit)
+        credit += self.pine.read_int32_signed(Constants.ADDR_CREDITS)
+        self.pine.write_int32_signed(Constants.ADDR_CREDITS, credit)
 
     def unlock_part(self, part_id:int) -> None:
-        self.pine.write_int8(part_id,0x01)
+        self.pine.write_int8_unsigned(part_id,0x01)
 
     def enforce_game_state(self) -> None:
         self.check_completed_missions()

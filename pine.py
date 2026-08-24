@@ -153,21 +153,37 @@ class Pine:
 
         return True
 
-    def read_int8(self, address: int) -> int:
+    def read_int8_unsigned(self, address: int) -> int:
         request = self._create_request(self.IPCCommand.READ8, address, 9)
-        return self.from_bytes(self._send_request(request)[-1:])
+        return self.from_bytes(self._send_request(request)[-1:], signed=False)
 
-    def read_int16(self, address) -> int:
+    def read_int8_signed(self, address: int) -> int:
+        request = self._create_request(self.IPCCommand.READ8, address, 9)
+        return self.from_bytes(self._send_request(request)[-1:], signed=True)
+
+    def read_int16_unsigned(self, address) -> int:
         request = self._create_request(self.IPCCommand.READ16, address, 9)
-        return self.from_bytes(self._send_request(request)[-2:])
+        return self.from_bytes(self._send_request(request)[-2:], signed=False)
 
-    def read_int32(self, address) -> int:
+    def read_int16_signed(self, address) -> int:
+        request = self._create_request(self.IPCCommand.READ16, address, 9)
+        return self.from_bytes(self._send_request(request)[-2:], signed=True)
+
+    def read_int32_unsigned(self, address) -> int:
         request = self._create_request(self.IPCCommand.READ32, address, 9)
-        return self.from_bytes(self._send_request(request)[-4:])
+        return self.from_bytes(self._send_request(request)[-4:], signed=False)
 
-    def read_int64(self, address) -> int:
+    def read_int32_signed(self, address: int) -> int:
+        request = self._create_request(self.IPCCommand.READ32, address, 9)
+        return self.from_bytes(self._send_request(request)[-4:], signed=True)
+
+    def read_int64_unsigned(self, address) -> int:
         request = self._create_request(self.IPCCommand.READ64, address, 9)
-        return self.from_bytes(self._send_request(request)[-8:])
+        return self.from_bytes(self._send_request(request)[-8:], signed=False)
+
+    def read_int64_signed(self, address) -> int:
+        request = self._create_request(self.IPCCommand.READ64, address, 9)
+        return self.from_bytes(self._send_request(request)[-8:], signed=True)
 
     def read_bytes(self, address: int, length: int) -> bytes:
         """Careful! This can be quite slow for large reads"""
@@ -184,24 +200,44 @@ class Pine:
 
         return data
 
-    def write_int8(self, address: int, value: int) -> None:
+    def write_int8_unsigned(self, address: int, value: int) -> None:
         request = self._create_request(self.IPCCommand.WRITE8, address, 9 + self.DataSize.INT8)
-        request += value.to_bytes(length=1, byteorder="little")
+        request += value.to_bytes(length=1, byteorder="little", signed=False)
         self._send_request(request)
 
-    def write_int16(self, address: int, value: int) -> None:
+    def write_int8_signed(self, address: int, value: int) -> None:
+        request = self._create_request(self.IPCCommand.WRITE8, address, 9 + self.DataSize.INT8)
+        request += value.to_bytes(length=1, byteorder="little", signed=True)
+        self._send_request(request)
+
+    def write_int16_unsigned(self, address: int, value: int) -> None:
         request = self._create_request(self.IPCCommand.WRITE16, address, 9 + self.DataSize.INT16)
-        request += value.to_bytes(length=2, byteorder="little")
+        request += value.to_bytes(length=2, byteorder="little", signed=False)
         self._send_request(request)
 
-    def write_int32(self, address: int, value: int) -> None:
+    def write_int16_signed(self, address: int, value: int) -> None:
+        request = self._create_request(self.IPCCommand.WRITE16, address, 9 + self.DataSize.INT16)
+        request += value.to_bytes(length=2, byteorder="little", signed=True)
+        self._send_request(request)
+
+    def write_int32_unsigned(self, address: int, value: int) -> None:
         request = self._create_request(self.IPCCommand.WRITE32, address, 9 + self.DataSize.INT32)
-        request += value.to_bytes(length=4, byteorder="little")
+        request += value.to_bytes(length=4, byteorder="little", signed=False)
         self._send_request(request)
 
-    def write_int64(self, address: int, value: int) -> None:
+    def write_int32_signed(self, address: int, value: int) -> None:
+        request = self._create_request(self.IPCCommand.WRITE32, address, 9 + self.DataSize.INT32)
+        request += value.to_bytes(length=4, byteorder="little", signed=True)
+        self._send_request(request)
+
+    def write_int64_unsigned(self, address: int, value: int) -> None:
         request = self._create_request(self.IPCCommand.WRITE64, address, 9 + self.DataSize.INT64)
-        request += value.to_bytes(length=8, byteorder="little")
+        request += value.to_bytes(length=8, byteorder="little", signed=False)
+        self._send_request(request)
+
+    def write_int64_signed(self, address: int, value: int) -> None:
+        request = self._create_request(self.IPCCommand.WRITE64, address, 9 + self.DataSize.INT64)
+        request += value.to_bytes(length=8, byteorder="little", signed=True)
         self._send_request(request)
 
     def write_float(self, address: int, value: float) -> None:
@@ -299,9 +335,9 @@ class Pine:
         return ipc
 
     @staticmethod
-    def to_bytes(value: int, size: int) -> bytes:
-        return value.to_bytes(length=size, byteorder="little")
+    def to_bytes(value: int, size: int, signed: bool = False) -> bytes:
+        return value.to_bytes(length=size, byteorder="little", signed=signed)
 
     @staticmethod
-    def from_bytes(arr: bytes) -> int:
-        return int.from_bytes(arr, byteorder="little")
+    def from_bytes(arr: bytes, signed: bool = False) -> int:
+        return int.from_bytes(arr, byteorder="little", signed=signed)

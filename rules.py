@@ -49,12 +49,7 @@ def set_completion_condition(world: AC3World) -> None:
     player = world.player
 
     if world.options.goal == Goal.option_missionsanity:
-        non_starting = [
-            mission.name
-            for mission in all_missions
-            if mission != STARTING_MISSION
-        ]
         amount = world.options.missionsanity_goal_requirement.value
-        world.multiworld.completion_condition[player] = lambda state: (sum(state.has(mission, player) for mission in non_starting) >= amount)
+        world.multiworld.completion_condition[player] = lambda state: (sum(state.has(mission.name, player) for mission in all_missions) >= amount)
     else: #Progressive mission
         world.multiworld.completion_condition[player] = Has(Constants.ITEM_VICTORY).resolve(world)
