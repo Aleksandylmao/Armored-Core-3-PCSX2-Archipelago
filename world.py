@@ -39,4 +39,5 @@ class AC3World(World):
 			"goal",
 			"missionsanity_goal_requirement",
 			"credit_check_amount",
+			"shopsanity"
 		)

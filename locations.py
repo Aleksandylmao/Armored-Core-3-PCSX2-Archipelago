@@ -32,10 +32,13 @@ def get_location_names_with_ids(location_names: list[str]) -> dict[str, int | No
     return {location_name: LOCATION_NAME_TO_ID[location_name] for location_name in location_names}
 
 def create_all_locations(world: AC3World) -> None:
-    create_regular_locations(world)
+    create_mission_locations(world)
     create_events(world)
 
-def create_regular_locations(world: AC3World) -> None:
+def create_shop_locations(world: AC3World) -> None:
+    return 
+
+def create_mission_locations(world: AC3World) -> None:
     mission_list = world.get_region(Constants.REGION_MISSION_LIST)
     location_to_add: dict[str, int] ={}
 
@@ -48,7 +51,7 @@ def create_regular_locations(world: AC3World) -> None:
     mission_list.add_locations(location_to_add, AC3Location)
 
 def create_events(world: AC3World) -> None:
-    mission_list = world.get_region(Constants.REGION_MISSION_LIST)
     if world.options.goal == options.Goal.option_progressive_missions:
+        mission_list = world.get_region(Constants.REGION_MISSION_LIST)
         mission_list.add_event(get_location_name_for_mission_completed(FINAL_MISSION),Constants.ITEM_VICTORY, location_type=AC3Location,item_type=items.AC3Item)
 

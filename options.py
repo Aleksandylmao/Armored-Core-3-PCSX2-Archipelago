@@ -86,3 +86,5 @@ class AC3Options(PerGameCommonOptions):
     goal: Goal
     missionsanity_goal_requirement: MissionsanityGoalRequirement
     credit_check_amount: CreditCheckAmount
+    shopsanity: Shopsanity
+    shopsanity_listings_per_mission: ShopsanityListingsPerMission

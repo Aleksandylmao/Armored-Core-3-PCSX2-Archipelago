@@ -1,8 +1,10 @@
 from enum import Enum
 
 from .mission import all_missions, id_to_mission, STARTING_MISSION
+from .parts import all_parts
 from .pine import Pine
 from .utils import Constants, MISSION_REGIONS_BY_NAME
+from ..factorio.Technologies import unlock
 
 
 class ConnectionStatus(Enum):
@@ -19,7 +21,10 @@ class AC3Interface:
         self.status = ConnectionStatus.DISCONNECTED
         self.completed_missions = set()
         self.received_missions: set[int] = set()
+        self.received_parts: list[int] = []
         self.queued_credits: int = 0
+        self.parts_shuffle: bool = False
+        self.shop_sanity: bool = False
 
     def connect_game(self) -> ConnectionStatus:
         #Todo the pine.connect() method freezes the main window, if PCSX2 is not open.
@@ -32,9 +37,11 @@ class AC3Interface:
                 self.status = ConnectionStatus.AC3_NOT_DETECTED
             else:
                 self.status = ConnectionStatus.DISCONNECTED
+                self.disconnected()
                 return self.status
         except Exception as e:
             self.status = ConnectionStatus.DISCONNECTED
+            self.disconnected()
             return self.status
 
         return self.check_ac3_loaded()
@@ -47,14 +54,17 @@ class AC3Interface:
                 self.status = ConnectionStatus.IN_GAME
             else:
                 self.status = ConnectionStatus.AC3_NOT_DETECTED
+                self.disconnected()
             return self.status
         except Exception as e:
+            self.disconnected()
             self.status = ConnectionStatus.AC3_NOT_DETECTED
             return self.status
 
     def disconnect_game(self) -> None:
         self.pine.disconnect()
         self.status = ConnectionStatus.DISCONNECTED
+        self.disconnected()
 
     def check_completed_missions(self) -> None:
         for mission in all_missions:
@@ -67,10 +77,8 @@ class AC3Interface:
             return
 
         counts = {name: 0 for name in MISSION_REGIONS_BY_NAME}
-
         self.received_missions.update(mission_ids)
         self.pine.write_int8_unsigned(Constants.ADDR_LOADING_ALL_MISSIONS,1)
-
         for mission_id in self.received_missions:
             mission = id_to_mission[mission_id]
             region = MISSION_REGIONS_BY_NAME.get(mission.region)
@@ -98,12 +106,39 @@ class AC3Interface:
         credit += self.pine.read_int32_signed(Constants.ADDR_CREDITS)
         self.pine.write_int32_signed(Constants.ADDR_CREDITS, credit)
 
-    def unlock_part(self, part_id:int) -> None:
-        self.pine.write_int8_unsigned(part_id,0x01)
+    def unlock_parts(self) -> None:
+        if self.parts_shuffle or self.shop_sanity:
+            for part in all_parts:
+                part_addr = part.id + Constants.ADDR_INVENTORY
+                amount: int = 0
+                if part_addr in self.received_parts:
+                    amount = self.received_parts.count(part_addr)
+
+                self.pine.write_int8_unsigned(part_addr, amount)
+
+    def disable_selling_parts(self) -> None:
+        if  self.parts_shuffle or self.shop_sanity:
+            self.pine.write_int32_unsigned(Constants.ADDR_FUNC_DISABLE_SELL_OPTIONAL_PART_MENU, Constants.INSTRUCTION_JR_RA)
+            self.pine.write_int32_unsigned(Constants.ADDR_FUNC_DISABLE_SELL_ASSEMBLY_MENU, Constants.INSTRUCTION_JR_RA)
+
+    def disable_adding_parts_from_shop(self) -> None:
+        if self.shop_sanity:
+            self.pine.write_int32_unsigned(Constants.ADDR_INSTR_DISABLE_ADDING_TO_INVENTORY,0x00000000)
 
     def enforce_game_state(self) -> None:
         self.check_completed_missions()
         self.apply_credits()
+        self.disable_selling_parts()
+        self.disable_adding_parts_from_shop()
 
     def is_connected(self) -> bool:
         return self.status == ConnectionStatus.IN_GAME
+
+    def disconnected(self) -> None:
+        self.connected = False
+        self.status = ConnectionStatus.DISCONNECTED
+        self.completed_missions = set()
+        self.received_missions: set[int] = set()
+        self.received_parts: list[int] = []
+        self.queued_credits: int = 0
+        self.parts_shuffle: bool = False

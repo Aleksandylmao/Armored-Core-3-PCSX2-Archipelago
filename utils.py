@@ -59,7 +59,7 @@ class Constants:
     ADDR_INVENTORY: int = 0x5B2021 #value = how many times you own the part, useful for some back units
     ADDR_FUNC_DISABLE_SELL_ASSEMBLY_MENU: int = 0x002AE990 #Instruct those two function instantly return
     ADDR_FUNC_DISABLE_SELL_OPTIONAL_PART_MENU: int = 0x002B1E38 #Bytes: 03E00008 Instruction: jr ra
-
+    INSTRUCTION_JR_RA: int = 0x03E00008
     #I was unable to figure out how to easily change the description of the shop items
     #The Strings get loaded from the disc and I don't know how to edit those on the disc
     #I can try to edit them before they get loaded into the ui but that would not be consistent

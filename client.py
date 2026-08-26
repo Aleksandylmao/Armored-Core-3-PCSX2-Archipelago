@@ -109,6 +109,7 @@ async def check_game(ctx) -> None:
     if not ctx.server:
         ctx.player_instruction("You are not currently connected to an Archipelago server. Connect now!")
         ctx.connection_state = "none"
+        ctx.interface.disconnected()
         return
 
     if not (ctx.slot and ctx.connection_state == "ready"):
@@ -125,8 +126,9 @@ async def check_game(ctx) -> None:
         return
 
     ctx.player_instruction("Connected and ready to play.")
-    new_locations = ctx.interface.completed_missions.difference(ctx.previously_checked_locations)
+    ctx.interface.shop_sanity = ctx.slot_data["shopsanity"]
 
+    new_locations = ctx.interface.completed_missions.difference(ctx.previously_checked_locations)
     if new_locations:
         await ctx.send_msgs([{"cmd": "LocationChecks", "locations": list(new_locations)}])
         await ctx.send_msgs([{
@@ -146,11 +148,11 @@ async def check_game(ctx) -> None:
             continue  #already handled this session
 
         server_item = ctx.items_received[i]
-        item_id = server_item.item
+        item_id: int = server_item.item
 
         #Idempotent unlocks: safe to re-apply every reconnect
         if item_id - Constants.ADDR_INVENTORY in all_part_ids:
-            ctx.interface.unlock_part(item_id)
+            ctx.interface.received_parts.append(item_id)
         elif item_id - Constants.ADDR_MISSION_COMPLETION in all_mission_ids:
             received_missions.append(item_id- Constants.ADDR_MISSION_COMPLETION)
 
@@ -176,6 +178,7 @@ async def check_game(ctx) -> None:
             received_missions.append(all_missions_by_order[x].id)
 
     ctx.interface.unlock_mission(received_missions)
+    ctx.interface.unlock_parts()
     ctx.interface.enforce_game_state()
 
 def get_progressive_mission_count(ctx) -> int:
