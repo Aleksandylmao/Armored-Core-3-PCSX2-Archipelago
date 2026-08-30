@@ -1,5 +1,6 @@
 from enum import Enum
 
+from .locations import shop_location_name_to_id
 from .mission import all_missions, id_to_mission, STARTING_MISSION
 from .parts import all_parts, all_heads, Part, all_part_list
 from .pine import Pine
@@ -23,8 +24,8 @@ class AC3Interface:
         self.queued_credits: int = 0
         self.parts_shuffle: bool = False
         self.shop_sanity: bool = False
-        self.shop_part_bought: set[int] = set()
-        self.shop_part_added: list[int] = []
+        self.shop_locations_bought: set[int] = set()
+        self.shop_location_added: set[int] = set()
         self.shop_listing_per_mission: int = 5
         self.shop_scouted: dict[int, tuple[str, str]] ={}
         self.current_menu_value: int = 0
@@ -77,8 +78,6 @@ class AC3Interface:
 
     def unlock_mission(self, mission_ids: list[int]) -> None:
         if not mission_ids and not self.received_missions:
-            return
-        if self.in_menu(Menu.MISSION):
             return
 
         counts = {name: 0 for name in MISSION_REGIONS_BY_NAME}
@@ -135,22 +134,21 @@ class AC3Interface:
         start_index = 0
         end_index = min(count * self.shop_listing_per_mission, len(all_parts))
         for part in all_parts[start_index:end_index]:
-            if part.id in self.shop_part_added and not part.id + Constants.ADDR_SHOP in self.shop_part_bought:
+            if part.id + Constants.ADDR_SHOP in self.shop_location_added and not part.id + Constants.ADDR_SHOP in self.shop_locations_bought:
                 if self.pine.read_int8_signed(Constants.ADDR_SHOP+part.id) == 0x00:
-                    self.shop_part_bought.add(part.id + Constants.ADDR_SHOP)
-                    print(part.id, part.name)
-                    
+                    self.shop_locations_bought.add(part.id + Constants.ADDR_SHOP)
+
     def unlock_shop_parts(self) -> None:
         count = len(self.completed_missions)
         start_index = 0
         end_index = min(count* self.shop_listing_per_mission, len(all_parts))
         for part in all_parts[start_index:end_index]:
-            if not part.id in self.shop_part_added and not part.id + Constants.ADDR_SHOP in self.shop_part_bought:
+            if not part.id in self.shop_location_added and not part.id + Constants.ADDR_SHOP in self.shop_locations_bought:
                 self.pine.write_int8_unsigned(Constants.ADDR_SHOP+part.id,0x01)
-                self.shop_part_added.append(part.id)
+                self.shop_location_added.add(part.id + Constants.ADDR_SHOP)
                 print("part has been added to shop")
                 print(part.id, part.name)
-            elif part.id + Constants.ADDR_SHOP in self.shop_part_bought:
+            elif part.id + Constants.ADDR_SHOP in self.shop_locations_bought:
                 self.pine.write_int8_unsigned(Constants.ADDR_SHOP+part.id,0x0)
 
         for part in all_parts[end_index:len(all_parts)]:
@@ -189,10 +187,10 @@ class AC3Interface:
         shop_index: int = self.pine.read_int8_unsigned(Constants.ADDR_INDEX_CURRENT_SHOP_PART_MENU)
         current_menu_part_list = all_part_list[shop_index]
         part_in_shop: list[int] = []
-        for shop_part in self.shop_part_added:
+        for shop_part in self.shop_location_added:
             for part in current_menu_part_list:
-                if shop_part == part.id and not part.id + Constants.ADDR_SHOP in self.shop_part_bought:
-                    part_in_shop.append(shop_part)
+                if shop_part == part.id + Constants.ADDR_SHOP and not part.id + Constants.ADDR_SHOP in self.shop_locations_bought:
+                    part_in_shop.append(shop_part - Constants.ADDR_SHOP)
 
         if not part_in_shop:
             return 0
@@ -211,13 +209,12 @@ class AC3Interface:
 
         self.check_completed_missions()
         self.apply_credits()
-
         #Shop sanity
         if self.shop_sanity:
             self.disable_selling_parts()
             self.disable_adding_parts_from_shop()
-            self.unlock_shop_parts()
             self.check_bought_parts()
+            self.unlock_shop_parts()
             self.change_shop_part_description()
             self.change_shop_part_name()
 
@@ -226,7 +223,6 @@ class AC3Interface:
 
     def disconnected(self) -> None:
         self.connected = False
-        self.status = ConnectionStatus.DISCONNECTED
         self.completed_missions = set()
         self.received_missions: set[int] = set()
         self.received_parts: list[int] = []
@@ -235,3 +231,7 @@ class AC3Interface:
 
     def set_shop_scout_data(self, scouted: dict[int, tuple[str, str]]) -> None:
         self.shop_scouted = scouted
+
+    def set_previously_bought_shop_locations(self, checked_locations: set[int]) -> None:
+        shop_location_ids = set(shop_location_name_to_id.values())
+        self.shop_locations_bought = (checked_locations & shop_location_ids)

@@ -37,8 +37,7 @@ for part in all_parts:
     shop_location_name_to_id[get_location_name_for_shop(part)] = get_location_id_for_shop_id(part.id)
 
 LOCATION_NAME_TO_ID: dict[str, int]
-LOCATION_NAME_TO_ID = mission_location_name_to_id
-LOCATION_NAME_TO_ID.update(shop_location_name_to_id)
+LOCATION_NAME_TO_ID = {**mission_location_name_to_id, **shop_location_name_to_id}
 
 def get_location_names_with_ids(location_names: list[str]) -> dict[str, int | None]:
     return {location_name: LOCATION_NAME_TO_ID[location_name] for location_name in location_names}

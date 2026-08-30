@@ -31,12 +31,13 @@ class AC3Context(CommonContext):
 
     def on_package(self, cmd: str, args: dict):
         if cmd == "Connected":
+            self.interface.disconnected()
             self.slot_data = args["slot_data"]
             self.connection_state = "request"
             self.previously_checked_locations = set(args["checked_locations"])
+            self.interface.set_previously_bought_shop_locations(self.previously_checked_locations)
             self.processed_items = 0
             self.previously_processed_items = -1
-            self.interface.disconnected()
             self.shop_locations_scouted = False
 
         elif cmd == "Retrieved":
@@ -141,17 +142,16 @@ async def check_game(ctx) -> None:
 
     ctx.player_instruction("Connected and ready to play.")
     ctx.interface.shop_sanity = ctx.slot_data["shopsanity"]
-    if ctx.interface.shop_sanity and not ctx.shop_locations_scouted:
+    if ctx.interface.shop_sanity:
         await ctx.send_msgs([{
             "cmd": "LocationScouts",
-            "locations": list(shop_location_name_to_id.values()),
-            "create_as_hint": 0
+            "locations": list(ctx.interface.shop_location_added),
+            "create_as_hint": 2
         }])
-        ctx.shop_locations_scouted = True
 
     current_locations = (
             ctx.interface.completed_missions
-            | set(ctx.interface.shop_part_bought)
+            | ctx.interface.shop_locations_bought
     )
     new_locations = current_locations.difference(ctx.previously_checked_locations)
     if new_locations:
@@ -179,7 +179,7 @@ async def check_game(ctx) -> None:
         if item_id - Constants.ADDR_INVENTORY in all_part_ids:
             ctx.interface.received_parts.append(item_id)
         elif item_id - Constants.ADDR_MISSION_COMPLETION in all_mission_ids:
-            received_missions.append(item_id- Constants.ADDR_MISSION_COMPLETION)
+            received_missions.append(item_id - Constants.ADDR_MISSION_COMPLETION)
 
         #Non-idempotent / consumable items: only apply items beyond
         #what Data Storage says we already processed last session
