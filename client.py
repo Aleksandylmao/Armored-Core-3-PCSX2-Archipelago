@@ -1,13 +1,17 @@
 import asyncio, multiprocessing, traceback
 from collections.abc import Sequence
 from argparse import Namespace
+
+from BaseClasses import ItemClassification
 from NetUtils import ClientStatus
 
 from CommonClient import CommonContext, ClientCommandProcessor, get_base_parser, handle_url_arg, server_loop, logger, gui_enabled
+from .locations import shop_location_name_to_id
 from .mission import all_missions, all_mission_ids, progressive_mission, all_missions_by_order, FINAL_MISSION
 from .options import Goal
 from .parts import all_part_ids
 from .pcsx2_interface import AC3Interface, ConnectionStatus
+from .pine import Pine
 from .utils import Constants
 
 class AC3CommandProcessor(ClientCommandProcessor):
@@ -19,7 +23,6 @@ class AC3Context(CommonContext):
     game = Constants.GAME_NAME
     items_handling = 0b111
     interface_sync_task : asyncio.Task = None
-
     def __init__(self, server_address, password):
         super().__init__(server_address, password)
         self.written_item_indexes: set[int] = set()
@@ -33,6 +36,9 @@ class AC3Context(CommonContext):
             self.previously_checked_locations = set(args["checked_locations"])
             self.processed_items = 0
             self.previously_processed_items = -1
+            self.interface.disconnected()
+            self.shop_locations_scouted = False
+
         elif cmd == "Retrieved":
             if self.connection_state == "requested":
                 retrieved = args["keys"].get(f"ac3_processed_{self.team}_{self.slot}")
@@ -40,6 +46,15 @@ class AC3Context(CommonContext):
                 checked = args["keys"].get(f"ac3_checked_{self.team}_{self.slot}") or []
                 self.previously_checked_locations.update(checked)
                 self.connection_state = "ready"
+        elif cmd == "LocationInfo":
+            scouted = {}
+            for network_item in args["locations"]:
+                location_id = network_item.location
+                item_id = network_item.item
+                item_name = self.item_names.lookup_in_game(item_id)
+                classification = network_item.flags
+                scouted[location_id] = (item_name, get_item_classification(classification))
+            self.interface.set_shop_scout_data(scouted)
 
     def player_instruction(self, instruction) -> None:
         if self.most_recent_instruction != instruction:
@@ -109,7 +124,6 @@ async def check_game(ctx) -> None:
     if not ctx.server:
         ctx.player_instruction("You are not currently connected to an Archipelago server. Connect now!")
         ctx.connection_state = "none"
-        ctx.interface.disconnected()
         return
 
     if not (ctx.slot and ctx.connection_state == "ready"):
@@ -127,8 +141,19 @@ async def check_game(ctx) -> None:
 
     ctx.player_instruction("Connected and ready to play.")
     ctx.interface.shop_sanity = ctx.slot_data["shopsanity"]
+    if ctx.interface.shop_sanity and not ctx.shop_locations_scouted:
+        await ctx.send_msgs([{
+            "cmd": "LocationScouts",
+            "locations": list(shop_location_name_to_id.values()),
+            "create_as_hint": 0
+        }])
+        ctx.shop_locations_scouted = True
 
-    new_locations = ctx.interface.completed_missions.difference(ctx.previously_checked_locations)
+    current_locations = (
+            ctx.interface.completed_missions
+            | set(ctx.interface.shop_part_bought)
+    )
+    new_locations = current_locations.difference(ctx.previously_checked_locations)
     if new_locations:
         await ctx.send_msgs([{"cmd": "LocationChecks", "locations": list(new_locations)}])
         await ctx.send_msgs([{
@@ -184,6 +209,19 @@ async def check_game(ctx) -> None:
 def get_progressive_mission_count(ctx) -> int:
     return sum(1 for it in ctx.items_received if it.item == progressive_mission.id)
 
+def get_item_classification(flags: int):
+    classifications = []
+
+    if flags & ItemClassification.progression:
+        classifications.append("Progression")
+    if flags & ItemClassification.useful:
+        classifications.append("Useful")
+    if flags & ItemClassification.trap:
+        classifications.append("Trap")
+    if flags & ItemClassification.filler:
+        classifications.append("Filler")
+
+    return " / ".join(classifications) or "Unknown"
 async def main(args: Namespace) -> None:
     multiprocessing.freeze_support()
 

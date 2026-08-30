@@ -13,6 +13,7 @@ def create_and_connect_regions(world: AC3World) -> None:
 
 def create_all_regions(world: AC3World) -> None:
     menu = Region(Constants.REGION_MENU, world.player, world.multiworld)
+    shop = Region(Constants.REGION_SHOP, world.player, world.multiworld)
     arena = Region(Constants.REGION_ARENA, world.player, world.multiworld)
     mission_list = Region(Constants.REGION_MISSION_LIST, world.player, world.multiworld)
     first_layer_district2 = Region(Constants.REGION_FIRST_DISTRICT2, world.player, world.multiworld)
@@ -24,7 +25,7 @@ def create_all_regions(world: AC3World) -> None:
     fourth_layer_energy_production = Region(Constants.REGION_FOURTH_ENERGY, world.player, world.multiworld)
     layered_hub = Region(Constants.REGION_LAYERED_HUB, world.player, world.multiworld)
 
-    regions = [menu,arena,mission_list,first_layer_district2,third_layer_industrial_research,third_layer_district1,
+    regions = [menu,shop,arena,mission_list,first_layer_district2,third_layer_industrial_research,third_layer_district1,
                first_layer_nature_area,first_layer_special_research,second_layer_waste_disposal,
                fourth_layer_energy_production,layered_hub]
     world.multiworld.regions += regions

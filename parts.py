@@ -14,7 +14,8 @@ class Part:
 class Head(Part):
 	def __init__(self, _id: int, name: str):
 		super().__init__(_id, name)
-all_heads: typing.Tuple[Head, ...] = (
+
+all_heads: tuple[Head, ...] = (
 	Head(0x000, "CDH-01-ATE"),
 	Head(0x001, "MHD-MM/003"),
 	Head(0x002, "CHD-04-YIV"),
@@ -33,7 +34,7 @@ class Core(Part):
 	def __init__(self, _id: int, name: str):
 		super().__init__(_id, name)
 
-all_cores: typing.Tuple[Core, ...] = (
+all_cores: tuple[Core, ...] = (
 	Core(0x040, "CCM-00-ST0"),
 	Core(0x041, "MCM-MX/002"),
 	Core(0x042, "CCL-01-NER"),
@@ -46,7 +47,7 @@ class Arms(Part):
 	def __init__(self, _id: int, name: str):
 		super().__init__(_id, name)
 
-all_arms: typing.Tuple[Arms, ...] = (
+all_arms: tuple[Arms, ...] = (
 	Arms(0x080, "CAM-10-XB"),
 	Arms(0x081, "CAM-11-SOL"),
 	Arms(0x082, "MAM-MX/REE"),
@@ -75,7 +76,7 @@ class Legs(Part):
 	def __init__(self, _id: int, name: str):
 		super().__init__(_id, name)
 
-all_legs: typing.Tuple[Legs, ...] = (
+all_legs: tuple[Legs, ...] = (
 	Legs(0x0C0, "CLM-01-EDF"),
 	Legs(0x0C1, "MLM-MM/ORDER"),
 	Legs(0x0C2, "CLM-02-SNSK"),
@@ -115,7 +116,7 @@ class Booster(Part):
 	def __init__(self, _id: int, name: str):
 		super().__init__(_id, name)
 
-all_boosters: typing.Tuple[Booster, ...] = (
+all_boosters: tuple[Booster, ...] = (
 	Booster(0x100, "CBT-00-UN1"),
 	Booster(0x101, "CBT-01-UN"),
 	Booster(0x102, "MBT-OX/002"),
@@ -129,7 +130,7 @@ class Fcs(Part):
 	def __init__(self, _id: int, name: str):
 		super().__init__(_id, name)
 
-all_fcs: typing.Tuple[Fcs, ...] = (
+all_fcs: tuple[Fcs, ...] = (
 	Fcs(0x140, "VREX-ST-1"),
 	Fcs(0x141, "AOX-F/ST-6"),
 	Fcs(0x142, "VREX-ST-12"),
@@ -146,7 +147,7 @@ class Generator(Part):
 	def __init__(self, _id: int, name: str):
 		super().__init__(_id, name)
 
-all_generators: typing.Tuple[Generator, ...] = (
+all_generators: tuple[Generator, ...] = (
 	Generator(0x180, "CGP-ROV6"),
 	Generator(0x181, "CGP-ROV10"),
 	Generator(0x182, "MGP-VE8"),
@@ -160,7 +161,7 @@ class Radiator(Part):
 	def __init__(self, _id: int, name: str):
 		super().__init__(_id, name)
 
-all_radiators: typing.Tuple[Radiator, ...] = (
+all_radiators: tuple[Radiator, ...] = (
 	Radiator(0x1C0, "RIX-CR10"),
 	Radiator(0x1C1, "RIX-CR11"),
 	Radiator(0x1C2, "RMR-SA44"),
@@ -174,7 +175,7 @@ class Inside(Part):
 	def __init__(self, _id: int, name: str):
 		super().__init__(_id, name)
 
-all_insides: typing.Tuple[Inside, ...] = (
+all_insides: tuple[Inside, ...] = (
 	Inside(0x200, "CWI-BO-20"),
 	Inside(0x201, "CWI-FM-50"),
 	Inside(0x202, "CWI-FM-30"),
@@ -220,7 +221,7 @@ class BackUnit(Part):
 	def __init__(self, _id: int, name: str, amount = 1):
 		super().__init__(_id, name,amount)
 
-all_back_units: typing.Tuple[BackUnit, ...] = (
+all_back_units: tuple[BackUnit, ...] = (
 	BackUnit(0x280, "CWM-S40-1",2),
 	BackUnit(0x281, "MWM-S42/6",2),
 	BackUnit(0x282, "CWM-S60-10",2),
@@ -257,7 +258,7 @@ all_back_units: typing.Tuple[BackUnit, ...] = (
 	BackUnit(0x2A1, "MWX-VM20/1"),
 	BackUnit(0x2A2, "CWX-DM-32-1"),
 	BackUnit(0x2A3, "MWX-LANZAR"),
-	BackUnit(0x2A4, "WX-LIC-10"),
+	BackUnit(0x2A4, "CWX-LIC-10"),
 	BackUnit(0x2A5, "MWX-MX/STRING"),
 	BackUnit(0x2A6, "KWX-OC-22"),
 	BackUnit(0x2A7, "KWM-AD-50"),
@@ -267,7 +268,7 @@ class ArmUnitR(Part):
 	def __init__(self, _id: int, name: str):
 		super().__init__(_id, name)
 
-all_arm_units_r: typing.Tuple[ArmUnitR, ...] = (
+all_arm_units_r: tuple[ArmUnitR, ...] = (
 	ArmUnitR(0x2C0, "CWG-RF-200"),
 	ArmUnitR(0x2C1, "MWG-RF/220"),
 	ArmUnitR(0x2C2, "CWG-RF-160"),
@@ -301,7 +302,7 @@ class ArmUnitL(Part):
 	def __init__(self, _id: int, name: str):
 		super().__init__(_id, name)
 
-all_arm_units_l: typing.Tuple[ArmUnitL, ...] = (
+all_arm_units_l: tuple[ArmUnitL, ...] = (
 	ArmUnitL(0x300, "CLB-LS-1551"),
 	ArmUnitL(0x301, "MLB-LS/003"),
 	ArmUnitL(0x302, "CLB-LS-2551"),
@@ -338,9 +339,25 @@ all_optionals: typing.Tuple[Optional, ...] = (
 	Optional(0x34F, "OP-INTENSIFY"),
 )
 
-all_parts: typing.Tuple[Part, ...] = (all_heads+	all_cores+	all_arms+	all_legs+	all_boosters+	all_fcs+
+all_parts: tuple[Part, ...] = (all_heads+	all_cores+	all_arms+	all_legs+	all_boosters+	all_fcs+
 									  all_generators+	all_radiators+	all_back_units+	all_arm_units_r+
 									  all_arm_units_l+ all_optionals +all_insides+all_extensions)
+all_part_list: list[tuple[Part,... ]] = [
+	all_heads,
+    all_cores,
+	all_arms,
+	all_legs,
+	all_boosters,
+	all_fcs,
+	all_generators,
+	all_radiators,
+	all_insides,
+	all_extensions,
+	all_back_units,
+	all_arm_units_r,
+	all_arm_units_l,
+	all_optionals
+]
 all_part_ids = {part.id for part in all_parts}
 base_starting_parts = {all_heads[0],
 					all_cores[0],

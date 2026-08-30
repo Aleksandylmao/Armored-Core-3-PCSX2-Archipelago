@@ -69,9 +69,9 @@ class ShopsanityListingsPerMission(Range):
     Higher numbers may require more grinding. Includes Raven Test.
     """
     display_name = "Shopsanity Listings Per Mission"
-    range_start = 4
-    range_end = 146
-    default = 4
+    range_start = 5
+    range_end = 231
+    default = 5
 
 class ShuffleParts(Toggle):
     """

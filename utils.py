@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Dict, Tuple
 
 from dataclasses import dataclass
@@ -12,6 +13,16 @@ class MissionRegion:
         self.mission_list_addr = mission_list_addr
         self.list_length_addr = list_length_addr
 
+#uses ADDR_CURRENT_MENU to read the value
+class Menu(Enum):
+    GARAGE_DEFAULT = 0x00
+    GARAGE_ASSEMBLY = 0x01
+    GARAGE_SHOP = 0x06
+    GARAGE_OPTIONAL_PARTS = 0x07
+    MISSION = 0x0E
+    MAIL = 0x1a
+    ARENA_EXTRA_ARENA = 0x34 # both share the same value
+
 @dataclass
 class Constants:
     # Armored Core 3 constants
@@ -25,6 +36,7 @@ class Constants:
     ITEM_VICTORY:str = "Victory"
 
     REGION_MENU: str ="Menu"
+    REGION_SHOP: str = "Shop"
     REGION_ARENA: str ="Arena Menu"
     REGION_MISSION_LIST: str ="Mission Menu"
     REGION_FIRST_DISTRICT2: str ="1st Layer: District 2"
@@ -37,6 +49,7 @@ class Constants:
     REGION_LAYERED_HUB: str = "Layered Hub"
     all_regions: Tuple[str,...] = (
         REGION_MENU,
+        REGION_SHOP,
         REGION_ARENA,
         REGION_MISSION_LIST,
         REGION_FIRST_DISTRICT2,
@@ -60,12 +73,14 @@ class Constants:
     ADDR_FUNC_DISABLE_SELL_ASSEMBLY_MENU: int = 0x002AE990 #Instruct those two function instantly return
     ADDR_FUNC_DISABLE_SELL_OPTIONAL_PART_MENU: int = 0x002B1E38 #Bytes: 03E00008 Instruction: jr ra
     INSTRUCTION_JR_RA: int = 0x03E00008
-    #I was unable to figure out how to easily change the description of the shop items
-    #The Strings get loaded from the disc and I don't know how to edit those on the disc
-    #I can try to edit them before they get loaded into the ui but that would not be consistent
-    #Therefore Shop Descriptions ain't implemented as of right now
+
     #ToDo: Shop Descriptions
     ADDR_SHOP: int = 0x5B2821   #same order as inventory; 0 = bought/not in shop; value > 0 times it can be bought
+    ADDR_CURRENTLY_VIEWED_PART: int = 0x5B00B0 #The currently euipped part won't load
+    ADDR_INDEX_CURRENT_SHOP_PART_MENU: int = 0x12771B4 #index from 0 to 0x0D to show which shop is currently selected
+    ADDR_SUM_OF_DISPLAYED_PARTS:int = 0x1279295 #sum of parts that are displayed in the current shop
+    ADDR_INDEX_SHOP_SELECTED_PART: int = 0x1279299
+    ADDR_PART_DESCRIPTION: int = 0x133B940
     ADDR_INSTR_DISABLE_ADDING_TO_INVENTORY: int = 0x002863AC #nop this
     #The shop item names have a max length of 18 characters
     OFFSET_SHOP_NAME: int = 0x18
@@ -83,7 +98,11 @@ class Constants:
     ADDR_SHOP_NAME_ARM_UNIT_R: int = 0x134763C
     ADDR_SHOP_NAME_ARM_UNIT_L: int = 0x1347C54
     ADDR_SHOP_NAME_OPTIONAL_PARTS: int = 0x1347F6C
-
+    LIST_SHOP_PART_NAMES: list[int] = (ADDR_SHOP_NAME_HEAD,ADDR_SHOP_NAME_CORE,ADDR_SHOP_NAME_ARM,ADDR_SHOP_NAME_LEG,
+                                       ADDR_SHOP_NAME_BOOSTER,ADDR_SHOP_NAME_FCS,ADDR_SHOP_NAME_GENERATOR,
+                                       ADDR_SHOP_NAME_RADIATOR,ADDR_SHOP_NAME_INSIDE,ADDR_SHOP_NAME_EXTENSION,
+                                       ADDR_SHOP_NAME_BACK_UNIT,ADDR_SHOP_NAME_ARM_UNIT_R,ADDR_SHOP_NAME_ARM_UNIT_L,
+                                       ADDR_SHOP_NAME_OPTIONAL_PARTS)
 
     #You can probably do this way simpler. But I don't want to invest more time into finding better addresses or trying assembly, for now I will come back someday maybe idk
     #The Mission list and length addresses are rewritten to default values everytime you enter Mission from the Menu
