@@ -1,7 +1,7 @@
 from enum import Enum
 
-from .locations import shop_location_name_to_id
-from .mission import all_missions, id_to_mission, STARTING_MISSION
+from .locations import shop_location_name_to_id, get_location_id_for_mission_rank
+from .mission import all_missions, id_to_mission, STARTING_MISSION, all_ranks
 from .parts import all_parts, all_heads, Part, all_part_list
 from .pine import Pine
 from .utils import Constants, MISSION_REGIONS_BY_NAME, Menu
@@ -20,6 +20,7 @@ class AC3Interface:
         self.status = ConnectionStatus.DISCONNECTED
         self.completed_missions = set()
         self.received_missions: set[int] = set()
+        self.completed_mission_ranks: set[int] = set()
         self.received_parts: list[int] = []
         self.queued_credits: int = 0
         self.parts_shuffle: bool = False
@@ -76,6 +77,15 @@ class AC3Interface:
             if completed in (2, 6):
                 self.completed_missions.add(mission.id+Constants.ADDR_MISSION_COMPLETION)
 
+    def check_mission_ranks(self) -> None:
+        #Missions must be completed otherwise all rank E location would be sent out.
+        for mission in all_missions:
+            achieved = self.pine.read_int8_unsigned(mission.id + Constants.ADDR_MISSION_RANK)
+            if not mission.id+Constants.ADDR_MISSION_COMPLETION in self.completed_missions:
+                continue
+            for rank in all_ranks:
+                if rank.id <= achieved:
+                    self.completed_mission_ranks.add(get_location_id_for_mission_rank(mission, rank))
     def unlock_mission(self, mission_ids: list[int]) -> None:
         if not mission_ids and not self.received_missions:
             return
@@ -146,8 +156,6 @@ class AC3Interface:
             if not part.id in self.shop_location_added and not part.id + Constants.ADDR_SHOP in self.shop_locations_bought:
                 self.pine.write_int8_unsigned(Constants.ADDR_SHOP+part.id,0x01)
                 self.shop_location_added.add(part.id + Constants.ADDR_SHOP)
-                print("part has been added to shop")
-                print(part.id, part.name)
             elif part.id + Constants.ADDR_SHOP in self.shop_locations_bought:
                 self.pine.write_int8_unsigned(Constants.ADDR_SHOP+part.id,0x0)
 
@@ -178,7 +186,6 @@ class AC3Interface:
         scouted = self.shop_scouted.get(location_id)
         if scouted is None:
             return
-        print(location_id)
         item_name, classification = scouted
         text = f"[{classification}]: {item_name}"
         self.pine.write_string(Constants.ADDR_PART_DESCRIPTION, text)
@@ -206,8 +213,8 @@ class AC3Interface:
 
     def enforce_game_state(self) -> None:
         self.read_current_menu_value()
-
         self.check_completed_missions()
+        self.check_mission_ranks()
         self.apply_credits()
         #Shop sanity
         if self.shop_sanity:

@@ -11,10 +11,7 @@ class Rank:
         self.name = name
 
     def __str__(self) -> str:
-        return (
-            f"{self.name} "
-        )
-
+        return f"{self.name} "
 
 class Mission:
     id: int
@@ -30,9 +27,7 @@ class Mission:
         self.story_progression = story_progression
 
     def __str__(self) -> str:
-        return (
-            f"{self.name} "
-        )
+        return f"{self.name} "
 
 #mission_order source https://www.scribd.com/document/86339948/Armored-Core-3-Prima-Official-eGuide-Copia#page=3
 #Story_progression, from the memory
@@ -49,7 +44,7 @@ class Mission:
 #   0x04 - Rank A
 #   0x05 - Rank S
 
-all_ranks:typing.Tuple[Rank,...] = (
+all_ranks: typing.Tuple[Rank,...] = (
     Rank(0x0, "E"),
     Rank(0x1, "D"),
     Rank(0x2, "C"),
@@ -58,7 +53,7 @@ all_ranks:typing.Tuple[Rank,...] = (
     Rank(0x5, "S"),
 )
 
-all_missions: typing.Tuple[Mission, ...] = (
+all_missions: tuple[Mission, ...] = (
     Mission(0x1, "Raven Test",Constants.REGION_FIRST_DISTRICT2, 0,0x00),
     Mission(0x2, "Defend Testing Grounds",Constants.REGION_FIRST_DISTRICT2, 8,0x06),
     Mission(0x3, "Secure Trene City",Constants.REGION_FIRST_DISTRICT2, 37,0x1D),
@@ -112,7 +107,7 @@ all_missions: typing.Tuple[Mission, ...] = (
 )
 progressive_mission = Mission(0x33, Constants.ITEM_PROGRESSIVE_MISSION_NAME, Constants.REGION_MISSION_LIST,0,0)
 
-all_missions_by_order: typing.Tuple[Mission, ...] = tuple(sorted(all_missions, key=lambda mission: mission.mission_order))
+all_missions_by_order: tuple[Mission, ...] = tuple(sorted(all_missions, key=lambda mission: mission.mission_order))
 
 STARTING_MISSION = all_missions[0]
 FINAL_MISSION = all_missions[-1]

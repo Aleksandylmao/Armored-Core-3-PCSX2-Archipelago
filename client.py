@@ -152,6 +152,7 @@ async def check_game(ctx) -> None:
     current_locations = (
             ctx.interface.completed_missions
             | ctx.interface.shop_locations_bought
+            | ctx.interface.completed_mission_ranks
     )
     new_locations = current_locations.difference(ctx.previously_checked_locations)
     if new_locations:
@@ -218,7 +219,7 @@ def get_item_classification(flags: int):
         classifications.append("Useful")
     if flags & ItemClassification.trap:
         classifications.append("Trap")
-    if flags & ItemClassification.filler:
+    if not flags & (ItemClassification.progression | ItemClassification.useful | ItemClassification.trap):
         classifications.append("Filler")
 
     return " / ".join(classifications) or "Unknown"

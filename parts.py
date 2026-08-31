@@ -107,8 +107,8 @@ all_legs: tuple[Legs, ...] = (
 	Legs(0x0DB, "MLC-TRIDENT"),
 	Legs(0x0DC, "CLC-D3TA"),
 	Legs(0x0DD, "MLR-RE/EGA"),
-	Legs(0x0EE, "MLR-MX/QUAIL"),
-	Legs(0x0EF, "MLR-SS/REM"),
+	Legs(0x0DE, "MLR-MX/QUAIL"),
+	Legs(0x0DF, "MLR-SS/REM"),
 	Legs(0x0E0, "MLR-MM/PETAL"),
 	Legs(0x0E1, "CLR-00-MAK"),
 )

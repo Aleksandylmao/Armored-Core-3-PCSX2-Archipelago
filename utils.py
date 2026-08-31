@@ -32,6 +32,7 @@ class Constants:
 
     ITEM_PROGRESSIVE_MISSION_NAME ="Progressive Mission"
     UNLOCKS_PER_PROGRESSIVE_MISSION = 5
+    RANK_LOCATION_ID_BASE: int = 0x10000000 # this should be far above the PS2 addresses space
     ITEM_CREDIT_NAME: str = "Bonus Credits"
     ITEM_VICTORY:str = "Victory"
 

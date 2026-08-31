@@ -43,18 +43,18 @@ class IncludeMissionRanks(Toggle):
 
 class ExcludeMissionRanks(Choice):
     """
-    Choose what achievable ranks should be excluded.
+    Choose what achievable rank locations should be excluded.
     If you choose Rank A, Rank A and Rank S will be excluded.
     """
     display_name = "Exclude Mission Ranks"
-    none = 0
-    rank_s = 1
-    rank_a = 2
-    rank_b = 3
-    rank_c = 4
-    rank_d = 5
-    rank_e = 6
-    default = 1
+    option_rank_e = 0
+    option_rank_d = 1
+    option_rank_c = 2
+    option_rank_b = 3
+    option_rank_a = 4
+    option_rank_s = 5
+    option_exclude_nothing = 6
+    default = 6
 
 class Shopsanity(Toggle):
     """
@@ -86,5 +86,7 @@ class AC3Options(PerGameCommonOptions):
     goal: Goal
     missionsanity_goal_requirement: MissionsanityGoalRequirement
     credit_check_amount: CreditCheckAmount
+    mission_rank: IncludeMissionRanks
+    exclude_mission_ranks: ExcludeMissionRanks
     shopsanity: Shopsanity
     shopsanity_listings_per_mission: ShopsanityListingsPerMission
