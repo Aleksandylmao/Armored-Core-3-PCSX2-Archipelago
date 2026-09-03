@@ -12,8 +12,8 @@ the emulator to make it more easily extensible, more portable, require less code
 performant.
 """
 import os
-import struct
 import socket
+import struct
 from enum import IntEnum
 from platform import system
 
@@ -106,7 +106,7 @@ class Pine:
 
             # Write Permissions are required to connect to Unix Sockets in Linux
             if os.access(os.path.join(base_path, socket_file_name), os.W_OK):
-               socket_path = os.path.join(base_path, socket_file_name)
+                socket_path = os.path.join(base_path, socket_file_name)
             else:
                 # Find the Socket in the Flatpak runtime otherwise
                 socket_path = os.path.join(base_path, ".flatpak/net.pcsx2.PCSX2/xdg-run", socket_file_name)
@@ -250,17 +250,20 @@ class Pine:
         bytes_written = 0
         while bytes_written < len(data):
             if len(data) - bytes_written >= 8:
-                request = self._create_request(self.IPCCommand.WRITE64, address + bytes_written, 9 + self.DataSize.INT64)
+                request = self._create_request(self.IPCCommand.WRITE64, address + bytes_written,
+                                               9 + self.DataSize.INT64)
                 request += data[bytes_written:bytes_written + 8]
                 self._send_request(request)
                 bytes_written += 8
             elif len(data) - bytes_written >= 4:
-                request = self._create_request(self.IPCCommand.WRITE32, address + bytes_written, 9 + self.DataSize.INT32)
+                request = self._create_request(self.IPCCommand.WRITE32, address + bytes_written,
+                                               9 + self.DataSize.INT32)
                 request += data[bytes_written:bytes_written + 4]
                 self._send_request(request)
                 bytes_written += 4
             elif len(data) - bytes_written >= 2:
-                request = self._create_request(self.IPCCommand.WRITE16, address + bytes_written, 9 + self.DataSize.INT16)
+                request = self._create_request(self.IPCCommand.WRITE16, address + bytes_written,
+                                               9 + self.DataSize.INT16)
                 request += data[bytes_written:bytes_written + 2]
                 self._send_request(request)
                 bytes_written += 2

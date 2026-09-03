@@ -1,6 +1,9 @@
 from dataclasses import dataclass
+
 from Options import Choice, PerGameCommonOptions, Range, Toggle
-#If anyone is reading this check out Armored Core 1 APWorld and Armored Core 6 APWorld
+
+
+# If anyone is reading this check out Armored Core 1 APWorld and Armored Core 6 APWorld
 class Goal(Choice):
     """
     Choose what you want your goal to be.
@@ -16,6 +19,7 @@ class Goal(Choice):
     option_progressive_missions = 1
     default = 1
 
+
 class MissionsanityGoalRequirement(Range):
     """
     When goal is missionsanity.
@@ -26,20 +30,13 @@ class MissionsanityGoalRequirement(Range):
     range_end = 49
     default = 49
 
-class CreditCheckAmount(Range):
-    """
-    Define how much you earn from Credit Filler checks you receieve.
-    """
-    display_name = "Credit Check Amount"
-    range_start = 1000
-    range_end = 100000
-    default = 10000
 
 class IncludeMissionRanks(Toggle):
     """
     Each Rank you can achieve in a Mission will be its own Location.
     """
     display_name = "Include Mission Ranks"
+
 
 class ExcludeMissionRanks(Choice):
     """
@@ -56,12 +53,14 @@ class ExcludeMissionRanks(Choice):
     option_exclude_nothing = 6
     default = 6
 
+
 class Shopsanity(Toggle):
     """
     Shopsanity turns all parts listings in the shop into locations,
     and all parts that you don't start with are shuffled into the multiworld.
     """
     display_name = "Shopsanity"
+
 
 class ShopsanityListingsPerMission(Range):
     """
@@ -73,13 +72,26 @@ class ShopsanityListingsPerMission(Range):
     range_end = 231
     default = 5
 
-class ShuffleParts(Toggle):
+
+# Todo, adjust the link to where ever the extra rules are written down.
+class ExtraRules(Toggle):
     """
-    If you choose against Shopsanity.
-    All parts that you don't start with are shuffled into the multiworld.
-    And the shop will be disabled.
+    When Shopsanity is turned on.
+    This setting adds more rules to some Missions so that players will have an easier time.
+    E.g. "Destroy Massive Weapon" will require a Leg-Hover part.
+    For more infos see https://github.com/Aleksandylmao/Armored-Core-3-PCSX2-Archipelago/tree/master/docs
     """
-    display_name = "Shuffle Parts"
+
+
+class CreditCheckAmount(Range):
+    """
+    Define how much you earn from Credit Filler checks you receieve.
+    """
+    display_name = "Credit Check Amount"
+    range_start = 1000
+    range_end = 100000
+    default = 10000
+
 
 @dataclass
 class AC3Options(PerGameCommonOptions):

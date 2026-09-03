@@ -1,28 +1,31 @@
-import asyncio, multiprocessing, traceback
-from collections.abc import Sequence
+import asyncio
+import multiprocessing
+import traceback
 from argparse import Namespace
+from collections.abc import Sequence
 
 from BaseClasses import ItemClassification
+from CommonClient import CommonContext, ClientCommandProcessor, get_base_parser, handle_url_arg, server_loop, logger, \
+    gui_enabled
 from NetUtils import ClientStatus
-
-from CommonClient import CommonContext, ClientCommandProcessor, get_base_parser, handle_url_arg, server_loop, logger, gui_enabled
-from .locations import shop_location_name_to_id
 from .mission import all_missions, all_mission_ids, progressive_mission, all_missions_by_order, FINAL_MISSION
 from .options import Goal
 from .parts import all_part_ids
 from .pcsx2_interface import AC3Interface, ConnectionStatus
-from .pine import Pine
 from .utils import Constants
+
 
 class AC3CommandProcessor(ClientCommandProcessor):
     def __init__(self, ctx):
         super().__init__(ctx)
 
+
 class AC3Context(CommonContext):
     command_processor = AC3CommandProcessor
     game = Constants.GAME_NAME
     items_handling = 0b111
-    interface_sync_task : asyncio.Task = None
+    interface_sync_task: asyncio.Task = None
+
     def __init__(self, server_address, password):
         super().__init__(server_address, password)
         self.written_item_indexes: set[int] = set()
@@ -74,8 +77,10 @@ class AC3Context(CommonContext):
         ui.logging_pairs = [("Client", "Archipelago")]
         return ui
 
+
 def get_goal_target_count(ctx) -> int:
     return ctx.slot_data.get("missionsanity_goal_requirement", 20)
+
 
 async def check_goal(ctx) -> None:
     if ctx.finished_game:
@@ -83,7 +88,7 @@ async def check_goal(ctx) -> None:
 
     if ctx.slot_data.get("goal") == Goal.option_missionsanity:
         reached = len(ctx.interface.completed_missions) >= get_goal_target_count(ctx)
-    else:  #Progressive Mission
+    else:  # Progressive Mission
         reached = (Constants.ADDR_MISSION_COMPLETION + FINAL_MISSION.id) in ctx.interface.completed_missions
 
     if reached:
@@ -95,7 +100,7 @@ async def interface_sync_task(ctx):
         try:
             if not ctx.interface.is_connected():
                 ctx.interface.connect_game()
-            await asyncio.sleep(0.1) # Poll rate
+            await asyncio.sleep(0.1)  # Poll rate
 
             if ctx.interface.is_connected():
                 await check_game(ctx)
@@ -116,6 +121,7 @@ async def interface_sync_task(ctx):
                 logger.error(traceback.format_exc())
             await asyncio.sleep(3)
             continue
+
 
 async def check_game(ctx) -> None:
     if not ctx.interface.check_ac3_loaded() == ConnectionStatus.IN_GAME:
@@ -167,23 +173,23 @@ async def check_game(ctx) -> None:
         ctx.previously_checked_locations.update(new_locations)
     await check_goal(ctx)
 
-    #Receive and apply items
-    received_missions =[]
+    # Receive and apply items
+    received_missions = []
     for i in range(len(ctx.items_received)):
         if i < ctx.processed_items:
-            continue  #already handled this session
+            continue  # already handled this session
 
         server_item = ctx.items_received[i]
         item_id: int = server_item.item
 
-        #Idempotent unlocks: safe to re-apply every reconnect
+        # Idempotent unlocks: safe to re-apply every reconnect
         if item_id - Constants.ADDR_INVENTORY in all_part_ids:
             ctx.interface.received_parts.append(item_id)
         elif item_id - Constants.ADDR_MISSION_COMPLETION in all_mission_ids:
             received_missions.append(item_id - Constants.ADDR_MISSION_COMPLETION)
 
-        #Non-idempotent / consumable items: only apply items beyond
-        #what Data Storage says we already processed last session
+        # Non-idempotent / consumable items: only apply items beyond
+        # what Data Storage says we already processed last session
         if ctx.previously_processed_items < i:
             if item_id == Constants.ADDR_CREDITS:
                 ctx.interface.queued_credits += ctx.slot_data["credit_check_amount"]
@@ -207,8 +213,10 @@ async def check_game(ctx) -> None:
     ctx.interface.unlock_parts()
     ctx.interface.enforce_game_state()
 
+
 def get_progressive_mission_count(ctx) -> int:
     return sum(1 for it in ctx.items_received if it.item == progressive_mission.id)
+
 
 def get_item_classification(flags: int):
     classifications = []
@@ -223,6 +231,8 @@ def get_item_classification(flags: int):
         classifications.append("Filler")
 
     return " / ".join(classifications) or "Unknown"
+
+
 async def main(args: Namespace) -> None:
     multiprocessing.freeze_support()
 
@@ -249,10 +259,9 @@ def launch_ac3_client(*args: Sequence[str]) -> None:
     import colorama
     parser = get_base_parser()
     parser.add_argument("--name", default=None, help="Slot Name to connect as.")
-    parser.add_argument("url",  default=None, nargs="?", help="Archipelago connection url")
+    parser.add_argument("url", default=None, nargs="?", help="Archipelago connection url")
 
     launch_args = handle_url_arg(parser.parse_args(args))
     colorama.init()
     asyncio.run(main(launch_args))
     colorama.deinit()
-

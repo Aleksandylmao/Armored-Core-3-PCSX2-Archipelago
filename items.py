@@ -1,8 +1,9 @@
 from __future__ import annotations
+
 import typing
-from BaseClasses import Item, ItemClassification
 from typing import TYPE_CHECKING
 
+from BaseClasses import Item, ItemClassification
 from . import options
 from .mission import all_missions, name_to_mission, STARTING_MISSION, progressive_mission
 from .parts import all_parts, base_starting_parts
@@ -11,23 +12,24 @@ from .utils import Constants
 if TYPE_CHECKING:
     from .world import AC3World
 
+
 class AC3Item(Item):
     game: str = Constants.GAME_NAME
 
-#Credits
+
+# Credits
 ITEM_NAME_TO_ID: typing.Dict[str, int] = {Constants.ITEM_CREDIT_NAME: Constants.ADDR_CREDITS}
 item_id_to_item_name: typing.Dict[int, str] = {Constants.ADDR_CREDITS: Constants.ITEM_CREDIT_NAME}
 
-#Missions
+# Missions
 for mission in all_missions:
     item_id_to_item_name[mission.id + Constants.ADDR_MISSION_COMPLETION] = mission.name
     ITEM_NAME_TO_ID[mission.name] = mission.id + Constants.ADDR_MISSION_COMPLETION
 
-#Parts
+# Parts
 for part in all_parts:
     item_id_to_item_name[part.id + Constants.ADDR_INVENTORY] = part.name
     ITEM_NAME_TO_ID[part.name] = part.id + Constants.ADDR_INVENTORY
-
 
 ITEM_NAME_TO_ID[progressive_mission.name] = progressive_mission.id
 item_id_to_item_name[progressive_mission.id] = progressive_mission.name
@@ -43,20 +45,22 @@ def create_item_with_correct_classification(world: AC3World, name: str) -> AC3It
 
     return AC3Item(name, classification, ITEM_NAME_TO_ID[name], world.player)
 
+
 def create_all_items(world: AC3World) -> None:
     itempool: list[Item] = []
     itempool += create_missions(world)
-    itempool += create_filler(world,itempool)
+    itempool += create_filler(world, itempool)
     world.multiworld.itempool += itempool
 
 
-def create_filler(world: AC3World, number_of_items :list[Item]) -> list[Item]:
+def create_filler(world: AC3World, number_of_items: list[Item]) -> list[Item]:
     itempool: list[Item] = []
 
     number_of_unfilled_locations = len(world.multiworld.get_unfilled_locations(world.player))
     needed_number_of_filler_items = number_of_unfilled_locations - len(number_of_items)
     itempool += [world.create_filler() for _ in range(needed_number_of_filler_items)]
     return itempool
+
 
 def create_missions(world: AC3World) -> list[Item]:
     itempool: list[Item] = []
@@ -67,11 +71,12 @@ def create_missions(world: AC3World) -> list[Item]:
                 itempool.append(world.create_item(mission2.name))
     else:
         world.push_precollected(world.create_item(progressive_mission.name))
-        mission_count:int = int(len(all_missions)/Constants.UNLOCKS_PER_PROGRESSIVE_MISSION)
+        mission_count: int = int(len(all_missions) / Constants.UNLOCKS_PER_PROGRESSIVE_MISSION)
         for x in range(mission_count):
             itempool.append(world.create_item(progressive_mission.name))
 
     return itempool
+
 
 def create_parts(world: AC3World) -> None:
     if not world.options.shopsanity:
