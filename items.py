@@ -29,7 +29,7 @@ item_id_to_item_name[progressive_mission.id] = progressive_mission.name
 def create_item_with_correct_classification(world: AC3World, name: str) -> AC3Item:
     if name == Constants.ITEM_CREDIT_NAME:
         classification = ItemClassification.filler
-    elif name in name_to_mission or name is progressive_mission.name:
+    elif name in name_to_mission or name == progressive_mission.name:
         classification = ItemClassification.progression
     else:
         classification = ItemClassification.useful
@@ -37,19 +37,21 @@ def create_item_with_correct_classification(world: AC3World, name: str) -> AC3It
     return AC3Item(name, classification, ITEM_NAME_TO_ID[name], world.player)
 
 def create_all_items(world: AC3World) -> None:
-    create_missions(world)
-    create_filler(world)
-
-def create_filler(world: AC3World) -> None:
     itempool: list[Item] = []
-
-    number_of_items = len(world.multiworld.itempool)
-    number_of_unfilled_locations = len(world.multiworld.get_unfilled_locations(world.player))
-    needed_number_of_filler_items = number_of_unfilled_locations - number_of_items
-    itempool += [world.create_filler() for _ in range(needed_number_of_filler_items)]
+    itempool += create_missions(world)
+    itempool += create_filler(world,itempool)
     world.multiworld.itempool += itempool
 
-def create_missions(world: AC3World) -> None:
+
+def create_filler(world: AC3World, number_of_items :list[Item]) -> list[Item]:
+    itempool: list[Item] = []
+
+    number_of_unfilled_locations = len(world.multiworld.get_unfilled_locations(world.player))
+    needed_number_of_filler_items = number_of_unfilled_locations - len(number_of_items)
+    itempool += [world.create_filler() for _ in range(needed_number_of_filler_items)]
+    return itempool
+
+def create_missions(world: AC3World) -> list[Item]:
     itempool: list[Item] = []
     if world.options.goal == options.Goal.option_missionsanity:
         world.push_precollected(world.create_item(STARTING_MISSION.name))
@@ -62,4 +64,4 @@ def create_missions(world: AC3World) -> None:
         for x in range(mission_count):
             itempool.append(world.create_item(progressive_mission.name))
 
-    world.multiworld.itempool += itempool
+    return itempool
