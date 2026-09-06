@@ -128,9 +128,9 @@ class AC3Interface:
 
 		for part in all_parts:
 			part_addr = part.id + Constants.ADDR_INVENTORY
-			amount: int = 0
-			if part_addr in self.received_parts:
-				amount = self.received_parts.count(part_addr)
+			amount: int = 0x02  # 0 if I want to implement a setting to receive parts individual
+			# if part_addr in self.received_parts:
+			#	amount = self.received_parts.count(part_addr)
 
 			self.pine.write_int8_unsigned(part_addr, amount)
 
@@ -147,6 +147,8 @@ class AC3Interface:
 		start_index = 0
 		end_index = min(count * self.shop_listing_per_mission, len(all_parts))
 		for part in all_parts[start_index:end_index]:
+			if part.name == "DUMMY":
+				continue
 			if part.id + Constants.ADDR_SHOP in self.shop_location_added and not part.id + Constants.ADDR_SHOP in self.shop_locations_bought:
 				if self.pine.read_int8_signed(Constants.ADDR_SHOP + part.id) == 0x00:
 					self.shop_locations_bought.add(part.id + Constants.ADDR_SHOP)
@@ -173,10 +175,22 @@ class AC3Interface:
 				scouted = self.shop_scouted.get(all_part_list[part_list_index][part_index].id + Constants.ADDR_SHOP)
 				if scouted is None:
 					continue
+				name_index = self.get_shop_name_index(part_list_index, part_index)
 				item_name, classification = scouted
 				text = f"[{item_name}]"[:18]
-				address = Constants.LIST_SHOP_PART_NAMES[part_list_index] + (part_index * Constants.OFFSET_SHOP_NAME)
+				address = Constants.LIST_SHOP_PART_NAMES[part_list_index] + (name_index * Constants.OFFSET_SHOP_NAME)
 				self.pine.write_string(address, text)
+
+	def get_shop_name_index(self, shop_index: int, part_index: int) -> int:
+		if shop_index != 8:
+			return part_index
+
+		dummy_indexes = {6, 7}  # 67 :D
+		for dummy_index in dummy_indexes:
+			if part_index >= dummy_index:
+				return part_index + 2
+
+		return part_index
 
 	def change_shop_part_description(self) -> None:
 		if not self.in_menu(Menu.GARAGE_SHOP):
@@ -197,16 +211,19 @@ class AC3Interface:
 		shop_index: int = self.pine.read_int8_unsigned(Constants.ADDR_INDEX_CURRENT_SHOP_PART_MENU)
 		current_menu_part_list = all_part_list[shop_index]
 		part_in_shop: list[int] = []
-		for shop_part in self.shop_location_added:
-			for part in current_menu_part_list:
-				if shop_part == part.id + Constants.ADDR_SHOP and not part.id + Constants.ADDR_SHOP in self.shop_locations_bought:
-					part_in_shop.append(shop_part - Constants.ADDR_SHOP)
+		for part in current_menu_part_list:
+			if part.id + Constants.ADDR_SHOP in self.shop_location_added:
+				if not part.id + Constants.ADDR_SHOP in self.shop_locations_bought:
+					part_in_shop.append(part.id)
 
 		if not part_in_shop:
 			return 0
 		selected_part_index: int = self.pine.read_int8_unsigned(Constants.ADDR_INDEX_SHOP_SELECTED_PART)
-		selected_part_id = part_in_shop[selected_part_index]
-		return selected_part_id
+
+		if selected_part_index >= len(part_in_shop):
+			return 0
+
+		return part_in_shop[selected_part_index]
 
 	def read_current_menu_value(self):
 		self.current_menu_value = self.pine.read_int8_unsigned(Constants.ADDR_CURRENT_MENU)

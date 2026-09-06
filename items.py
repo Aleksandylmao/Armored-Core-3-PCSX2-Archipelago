@@ -83,14 +83,14 @@ def create_parts(world: AC3World) -> list[Item]:
 	itempool: list[Item] = []
 	if not world.options.shopsanity:
 		return
-	
+
 	for part in all_parts:
 		item = world.create_item(part.name)
 		if part in base_starting_parts:
 			world.push_precollected(item)
 		else:
 			itempool.append(item)
-		if part.amount > 1:  # some back units can be equipped on both the right and left shoulder
-			itempool.append(world.create_item(part.name))
-
+	# if part.amount > 1:  # some back units can be equipped on both the right and left shoulder
+	#	itempool.append(world.create_item(part.name))
+	# Might add an Setting to choose if the player wants to receive backunits once or multiple times (those that can be equipped multiple times)
 	return itempool

@@ -392,8 +392,8 @@ all_optionals: typing.Tuple[Optional, ...] = (
 )
 
 all_parts: tuple[Part, ...] = (all_heads + all_cores + all_arms + all_legs + all_boosters + all_fcs +
-                               all_generators + all_radiators + all_back_units + all_arm_units_r +
-                               all_arm_units_l + all_optionals + all_insides + all_extensions)
+                               all_generators + all_radiators + all_insides + all_extensions + all_back_units + all_arm_units_r +
+                               all_arm_units_l + all_optionals)
 all_part_list: list[tuple[Part, ...]] = [
 	all_heads,
 	all_cores,
