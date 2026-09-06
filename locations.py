@@ -91,12 +91,11 @@ def create_mission_locations(world: AC3World) -> None:
 
 
 def create_mission_rank_locations(world: AC3World) -> None:
-	if not world.options.mission_rank:
-		return
-	exclude_from: int = world.options.exclude_mission_ranks.value
-	print(exclude_from)
-	included_ranks = all_ranks[:exclude_from]
-
+	mission_rank_value: int = world.options.mission_rank.value
+	included_ranks = all_ranks[:mission_rank_value]
+	for rank in included_ranks:
+		print(rank.name)
+		
 	mission_list = world.get_region(Constants.REGION_MISSION_LIST)
 	location_to_add: dict[str, int] = {}
 

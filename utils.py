@@ -64,6 +64,8 @@ class Constants:
 		REGION_FOURTH_ENERGY,
 		REGION_LAYERED_HUB,
 	)
+
+	INSTRUCTION_JR_RA: int = 0x03E00008
 	ADDR_LOADING_ALL_MISSIONS: int = 0x5BE034
 	ADDR_CURRENT_MENU: int = 0x5CB101
 	ADDR_PREVIOUS_MENU: int = 0x5CB102
@@ -75,15 +77,14 @@ class Constants:
 	ADDR_INVENTORY: int = 0x5B2021  # value = how many times you own the part, useful for some back units
 	ADDR_FUNC_DISABLE_SELL_ASSEMBLY_MENU: int = 0x002AE990  # Instruct those two function instantly return
 	ADDR_FUNC_DISABLE_SELL_OPTIONAL_PART_MENU: int = 0x002B1E38  # Bytes: 03E00008 Instruction: jr ra
-	INSTRUCTION_JR_RA: int = 0x03E00008
 
-	# ToDo: Shop Descriptions
 	ADDR_SHOP: int = 0x5B2821  # same order as inventory; 0 = bought/not in shop; value > 0 times it can be bought
 	ADDR_CURRENTLY_VIEWED_PART: int = 0x5B00B0  # The currently euipped part won't load
 	ADDR_INDEX_CURRENT_SHOP_PART_MENU: int = 0x12771B4  # index from 0 to 0x0D to show which shop is currently selected
 	ADDR_SUM_OF_DISPLAYED_PARTS: int = 0x1279295  # sum of parts that are displayed in the current shop
 	ADDR_INDEX_SHOP_SELECTED_PART: int = 0x1279299
 	ADDR_PART_DESCRIPTION: int = 0x133B940
+	ADDR_TEXT_SELL: int = 0x7EFC8B
 	ADDR_INSTR_DISABLE_ADDING_TO_INVENTORY: int = 0x002863AC  # nop this
 	# The shop item names have a max length of 18 characters
 	OFFSET_SHOP_NAME: int = 0x18

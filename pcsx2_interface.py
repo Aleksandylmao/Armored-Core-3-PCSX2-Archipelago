@@ -137,6 +137,7 @@ class AC3Interface:
 	def disable_selling_parts(self) -> None:
 		self.pine.write_int32_unsigned(Constants.ADDR_FUNC_DISABLE_SELL_OPTIONAL_PART_MENU, Constants.INSTRUCTION_JR_RA)
 		self.pine.write_int32_unsigned(Constants.ADDR_FUNC_DISABLE_SELL_ASSEMBLY_MENU, Constants.INSTRUCTION_JR_RA)
+		self.pine.write_string(Constants.ADDR_TEXT_SELL, "NO")
 
 	def disable_adding_parts_from_shop(self) -> None:
 		self.pine.write_int32_unsigned(Constants.ADDR_INSTR_DISABLE_ADDING_TO_INVENTORY, 0x00000000)

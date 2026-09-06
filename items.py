@@ -49,6 +49,7 @@ def create_item_with_correct_classification(world: AC3World, name: str) -> AC3It
 def create_all_items(world: AC3World) -> None:
 	itempool: list[Item] = []
 	itempool += create_missions(world)
+	itempool += create_parts(world)
 	itempool += create_filler(world, itempool)
 	world.multiworld.itempool += itempool
 
@@ -78,18 +79,18 @@ def create_missions(world: AC3World) -> list[Item]:
 	return itempool
 
 
-def create_parts(world: AC3World) -> None:
+def create_parts(world: AC3World) -> list[Item]:
+	itempool: list[Item] = []
 	if not world.options.shopsanity:
 		return
-
-	itempool: list[Item] = []
+	
 	for part in all_parts:
 		item = world.create_item(part.name)
 		if part in base_starting_parts:
 			world.push_precollected(item)
 		else:
 			itempool.append(item)
-		if part.amount > 1:
+		if part.amount > 1:  # some back units can be equipped on both the right and left shoulder
 			itempool.append(world.create_item(part.name))
 
-	world.multiworld.itempool += itempool
+	return itempool

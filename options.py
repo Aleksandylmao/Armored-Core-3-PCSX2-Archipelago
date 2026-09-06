@@ -31,33 +31,29 @@ class MissionsanityGoalRequirement(Range):
 	default = 49
 
 
-class IncludeMissionRanks(Toggle):
+class MissionRanks(Choice):
 	"""
-	Each Rank you can achieve in a Mission will be its own Location.
+	Choose what achievable Mission-Rank locations should be included.
+	If you choose Rank A, Rank A and all Ranks below it will be included, E-Rank - A-Rank.
+	Currently, the logic is if you can play the Mission you can achieve all included Ranks.
+	I sincerely don't recommend S-Rank, especially with Shopsanity.
 	"""
 	display_name = "Include Mission Ranks"
-
-
-class ExcludeMissionRanks(Choice):
-	"""
-	Choose what achievable rank locations should be excluded.
-	If you choose Rank A, Rank A and Rank S will be excluded.
-	"""
-	display_name = "Exclude Mission Ranks"
-	option_rank_e = 0
-	option_rank_d = 1
-	option_rank_c = 2
-	option_rank_b = 3
-	option_rank_a = 4
-	option_rank_s = 5
-	option_exclude_nothing = 6
-	default = 6
+	option_none = 0
+	option_rank_e = 1
+	option_rank_d = 2
+	option_rank_c = 3
+	option_rank_b = 4
+	option_rank_a = 5
+	option_rank_s = 6
+	default = 0
 
 
 class Shopsanity(Toggle):
 	"""
 	Shopsanity turns all parts listings in the shop into locations,
 	and all parts that you don't start with are shuffled into the multiworld.
+	Currently, the Missions will have no additional rules, Destroy Massive Weapon will not expect you to have a Hover.Part.
 	"""
 	display_name = "Shopsanity"
 
@@ -71,16 +67,6 @@ class ShopsanityListingsPerMission(Range):
 	range_start = 5
 	range_end = 231
 	default = 5
-
-
-# Todo, adjust the link to where ever the extra rules are written down.
-class ExtraRules(Toggle):
-	"""
-	When Shopsanity is turned on.
-	This setting adds more rules to some Missions so that players will have an easier time.
-	E.g. "Destroy Massive Weapon" will require a Leg-Hover part.
-	For more infos see https://github.com/Aleksandylmao/Armored-Core-3-PCSX2-Archipelago/tree/master/docs
-	"""
 
 
 class CreditCheckAmount(Range):
@@ -98,8 +84,6 @@ class AC3Options(PerGameCommonOptions):
 	goal: Goal
 	missionsanity_goal_requirement: MissionsanityGoalRequirement
 	credit_check_amount: CreditCheckAmount
-	mission_rank: IncludeMissionRanks
-	exclude_mission_ranks: ExcludeMissionRanks
+	mission_rank: MissionRanks
 	shopsanity: Shopsanity
 	shopsanity_listings_per_mission: ShopsanityListingsPerMission
-	extraRules: ExtraRules

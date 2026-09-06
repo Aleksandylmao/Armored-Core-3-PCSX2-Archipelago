@@ -381,7 +381,7 @@ all_optionals: typing.Tuple[Optional, ...] = (
 	Optional(0x345, "OP-L-AXL"),
 	Optional(0x346, "OP-LFCS++"),
 	Optional(0x347, "OP-L/BRK"),
-	Optional(0x348, " OP-L/TRN"),
+	Optional(0x348, "OP-L/TRN"),
 	Optional(0x349, "OP-E-LAI"),
 	Optional(0x34A, "OP-E-LAP"),
 	Optional(0x34B, "OP-SP/E++"),

@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from rule_builder.rules import Has
 from .locations import get_location_name_for_mission_completed, get_location_name_for_shop, \
-    get_location_name_for_mission_rank
+	get_location_name_for_mission_rank
 from .mission import all_missions, progressive_mission, all_missions_by_order, all_ranks
 from .options import Goal
 from .parts import all_parts
@@ -85,9 +85,7 @@ def set_shop_location_rules(world: AC3World) -> None:
 
 
 def set_mission_rank_location_rules(world: AC3World) -> None:
-	if not world.options.mission_rank:
-		return
-	included_ranks = all_ranks[:world.options.exclude_mission_ranks.value]
+	included_ranks = all_ranks[:world.options.mission_rank.value]
 	if world.options.goal == Goal.option_progressive_missions:
 		count = 0
 		for x in range(len(all_missions_by_order)):
