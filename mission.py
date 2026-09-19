@@ -123,3 +123,10 @@ FINAL_MISSION = all_missions[-1]
 id_to_mission = {mission.id: mission for mission in all_missions}
 name_to_mission = {mission.name: mission for mission in all_missions}
 all_mission_ids = {mission.id for mission in all_missions}
+
+# Destroy Kisaragi Forces
+# Destroy Massive MT
+# Destroy Massive Weapon
+# Protect Crest Convoy
+# Investigate Magna Ruins
+# Infiltrate Rehito Lab
