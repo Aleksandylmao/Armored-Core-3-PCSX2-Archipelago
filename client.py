@@ -6,7 +6,7 @@ from collections.abc import Sequence
 
 from BaseClasses import ItemClassification
 from CommonClient import CommonContext, ClientCommandProcessor, get_base_parser, handle_url_arg, server_loop, logger, \
-    gui_enabled
+	gui_enabled
 from NetUtils import ClientStatus
 from .mission import all_missions, all_mission_ids, progressive_mission, all_missions_by_order, FINAL_MISSION
 from .options import Goal
@@ -55,7 +55,8 @@ class AC3Context(CommonContext):
 			for network_item in args["locations"]:
 				location_id = network_item.location
 				item_id = network_item.item
-				item_name = self.item_names.lookup_in_game(item_id)
+				owning_player = network_item.player
+				item_name = self.item_names.lookup_in_slot(item_id, owning_player)
 				classification = network_item.flags
 				scouted[location_id] = (item_name, get_item_classification(classification))
 			self.interface.set_shop_scout_data(scouted)

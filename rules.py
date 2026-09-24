@@ -31,7 +31,7 @@ def set_all_rules(world: AC3World) -> None:
 	set_mission_location_rules(world)
 	set_completion_condition(world)
 	set_shop_location_rules(world)
-	set_mission_rank_location_rules(world)
+	# set_mission_rank_location_rules(world)
 	set_hard_mission_rules(world)
 
 
@@ -144,6 +144,8 @@ def shopsanity_part_diversity_rule(world: AC3World):
 
 
 def set_hard_mission_rules(world: AC3World) -> None:
+	if world.options.goal == Goal.option_progressive_missions:
+		return
 	unlock_rule = missions_unlocked_rule(world)
 	# part_rule = shopsanity_part_diversity_rule(world) if world.options.shopsanity else None
 

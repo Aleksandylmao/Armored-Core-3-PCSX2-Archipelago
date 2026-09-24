@@ -64,7 +64,7 @@ def get_location_names_with_ids(location_names: list[str]) -> dict[str, int | No
 
 def create_all_locations(world: AC3World) -> None:
 	create_mission_locations(world)
-	create_mission_rank_locations(world)
+	# create_mission_rank_locations(world)
 	create_shop_locations(world)
 	create_events(world)
 
@@ -95,7 +95,7 @@ def create_mission_rank_locations(world: AC3World) -> None:
 	included_ranks = all_ranks[:mission_rank_value]
 	for rank in included_ranks:
 		print(rank.name)
-		
+
 	mission_list = world.get_region(Constants.REGION_MISSION_LIST)
 	location_to_add: dict[str, int] = {}
 
