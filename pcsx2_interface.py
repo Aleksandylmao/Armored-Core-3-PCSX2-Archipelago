@@ -129,10 +129,11 @@ class AC3Interface:
 		for part in all_parts:
 			part_addr = part.id + Constants.ADDR_INVENTORY
 			amount: int = 0x02  # 0 if I want to implement a setting to receive parts individual
-			# if part_addr in self.received_parts:
+			if part_addr in self.received_parts:
+				self.pine.write_int8_unsigned(part_addr, amount)
 			#	amount = self.received_parts.count(part_addr)
-
-			self.pine.write_int8_unsigned(part_addr, amount)
+			else:
+				self.pine.write_int8_unsigned(part_addr, 0)
 
 	def disable_selling_parts(self) -> None:
 		self.pine.write_int32_unsigned(Constants.ADDR_FUNC_DISABLE_SELL_OPTIONAL_PART_MENU, Constants.INSTRUCTION_JR_RA)
