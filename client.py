@@ -12,7 +12,7 @@ from .mission import all_missions, all_mission_ids, progressive_mission, all_mis
 from .options import Goal
 from .parts import all_part_ids
 from .pcsx2_interface import AC3Interface, ConnectionStatus
-from .utils import Constants
+from .utils import Constants, sanitize_for_ps2_display
 
 
 class AC3CommandProcessor(ClientCommandProcessor):
@@ -56,8 +56,10 @@ class AC3Context(CommonContext):
 				location_id = network_item.location
 				item_id = network_item.item
 				owning_player = network_item.player
-				item_name = self.item_names.lookup_in_slot(item_id, owning_player)
 				classification = network_item.flags
+				item_name = self.item_names.lookup_in_slot(item_id, owning_player)
+				item_name = sanitize_for_ps2_display(item_name,
+				                                     max_length=18)  # matches OFFSET_SHOP_NAME's 18-char limit you already documented
 				scouted[location_id] = (item_name, get_item_classification(classification))
 			self.interface.set_shop_scout_data(scouted)
 

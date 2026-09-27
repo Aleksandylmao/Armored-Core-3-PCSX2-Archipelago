@@ -178,9 +178,8 @@ class AC3Interface:
 					continue
 				name_index = self.get_shop_name_index(part_list_index, part_index)
 				item_name, classification = scouted
-				text = f"[{item_name}]"[:18]
 				address = Constants.LIST_SHOP_PART_NAMES[part_list_index] + (name_index * Constants.OFFSET_SHOP_NAME)
-				self.pine.write_string(address, text)
+				self.pine.write_string(address, item_name)
 
 	def get_shop_name_index(self, shop_index: int, part_index: int) -> int:
 		if shop_index != 8:

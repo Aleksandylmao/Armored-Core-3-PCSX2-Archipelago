@@ -173,3 +173,15 @@ class Constants:
 
 
 MISSION_REGIONS_BY_NAME: Dict[str, MissionRegion] = {mr.name: mr for mr in Constants.MISSION_REGIONS}
+
+SHOP_TEXT_SAFE_CHARS = set(
+	"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	"abcdefghijklmnopqrstuvwxyz"
+	"0123456789"
+	" -_/.:[]!?"
+)
+
+
+def sanitize_for_ps2_display(text: str, max_length: int) -> str:
+	cleaned = "".join(c if c in SHOP_TEXT_SAFE_CHARS else "?" for c in text)
+	return cleaned[:max_length]
