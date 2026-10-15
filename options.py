@@ -51,9 +51,9 @@ class MissionRanks(Choice):
 
 class Shopsanity(Toggle):
 	"""
-	Shopsanity turns all parts listings in the shop into locations,
-	and all parts that you don't start with are shuffled into the multiworld.
-	Currently, the Missions will have no additional rules, Destroy Massive Weapon will not expect you to have a Hover.Part.
+	Shopsanity turns all parts listings in the shop into locations.
+	And all parts that you don't start with are shuffled into the multiworld.
+	Currently, the Missions will have no additional rules, e.g. Destroy Massive Weapon will not expect you to have a Hover Part.
 	"""
 	display_name = "Shopsanity"
 
@@ -61,7 +61,8 @@ class Shopsanity(Toggle):
 class ShopsanityListingsPerMission(Range):
 	"""
 	Define how many shop listings open up per mission completion.
-	Higher numbers may require more grinding. Includes Raven Test.
+	Higher numbers may require more grinding.
+	Includes Raven Test.
 	"""
 	display_name = "Shopsanity Listings Per Mission"
 	range_start = 5
