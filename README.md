@@ -34,10 +34,10 @@ AI Disclaimer
 - What was the purpose of your use of these tools?
 - - Mainly for code reviews, Ai looks at my code informs me of bugs that I missed, what would be a better design, etc. I always take its feedback with a grain of salt.    
 - - Sometimes technical questions, since I'm still new to Python and APWorld development 
-- - Sometimes minor bug fixes. e.g. in the Shops where certain symbols (e.g. `<` and `>`) caused crashes, I identified it and AI wrote the function which looked good to me.
+- - One minor bug fixes. e.g. in the Shops certain symbols (e.g. `<` and `>`) caused cause crashes, I identified it and AI wrote the function which looked good to me.
 - - At the beginning I tried to use it to help me find memory addresses, but it didn't help at all. In the end it was faster to learn a bit of assembly myself.
 - How extensively were the tools used? 
-- - I let AI review my code occasionally. And besides that one bug not much. 
+- - I let AI review my code regularly. Bug fixing not much. Asking question at the beginning pretty often, but less and less over time. 
 - How much human review was done?
 - - All the code was reviewed and written by me. If somebody else wants to review my code feel free to do so. 
 
