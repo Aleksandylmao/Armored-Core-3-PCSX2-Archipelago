@@ -13,8 +13,6 @@ from .options import Goal
 from .parts import all_part_ids
 from .pcsx2_interface import AC3Interface, ConnectionStatus
 from .utils import Constants
-from ..stardew_valley.stardew_rule import true_
-
 
 class AC3CommandProcessor(ClientCommandProcessor):
 	def __init__(self, ctx):
@@ -32,10 +30,20 @@ class AC3Context(CommonContext):
 		self.written_item_indexes: set[int] = set()
 		self.interface = AC3Interface()
 		self.most_recent_instruction = None
+		self.connection_state = ""
+		self.previously_processed_items = -1
+		self.processed_items = 0
+		self.slot_data = ""
+		self.previously_checked_locations = set()
+		self.shop_locations_scouted = False
+
+	async def shutdown(self):
+		await super().shutdown()
+		await asyncio.to_thread(self.interface.disconnect_game)
 
 	def on_package(self, cmd: str, args: dict):
 		if cmd == "Connected":
-			self.interface.disconnected()
+			self.interface.default_variables_values()
 			self.slot_data = args["slot_data"]
 			self.connection_state = "request"
 			self.previously_checked_locations = set(args["checked_locations"])
@@ -59,7 +67,7 @@ class AC3Context(CommonContext):
 				owning_player = network_item.player
 				classification = network_item.flags
 				item_name = self.item_names.lookup_in_slot(item_id, owning_player)
-				item_name = self.interface.sanitize_for_ps2_display(item_name, max_length=18)
+				item_name = self.interface.sanitize_for_ps2_display(item_name)
 				scouted[location_id] = (item_name, get_item_classification(classification))
 			self.interface.set_shop_scout_data(scouted)
 
@@ -103,7 +111,7 @@ async def interface_sync_task(ctx):
 	while not ctx.exit_event.is_set():
 		try:
 			if not ctx.interface.is_connected():
-				ctx.interface.connect_game()
+				await ctx.interface.connect_game_async()
 			await asyncio.sleep(0.1)  # Poll rate
 
 			if ctx.interface.is_connected():
@@ -155,11 +163,10 @@ async def check_game(ctx) -> None:
 	ctx.interface.shop_listing_per_mission = ctx.slot_data["shopsanity_listings_per_mission"]
 
 	if ctx.interface.shop_sanity:
-		await ctx.send_msgs([{
-			"cmd": "LocationScouts",
-			"locations": list(ctx.interface.shop_location_added),
-			"create_as_hint": 2
-		}])
+		new_scouts = ctx.interface.shop_location_added - ctx.interface.shop_location_scouted
+		if new_scouts:
+			await ctx.send_msgs([{"cmd": "LocationScouts", "locations": list(new_scouts), "create_as_hint": 2}])
+			ctx.interface.shop_location_scouted |= new_scouts
 
 	current_locations = (
 			ctx.interface.completed_missions

@@ -83,6 +83,8 @@ class Constants:
 	ADDR_SUM_OF_DISPLAYED_PARTS: int = 0x1279295  # sum of parts that are displayed in the current shop
 	ADDR_INDEX_SHOP_SELECTED_PART: int = 0x1279299
 	ADDR_PART_DESCRIPTION: int = 0x133B940
+	MAX_DESCRIPTION_TEXT_LENGTH:int = 60
+	MAX_PART_NAME_LENGTH: int = 18
 	ADDR_TEXT_SELL: int = 0x7EFC8B
 	ADDR_INSTR_DISABLE_ADDING_TO_INVENTORY: int = 0x002863AC  # nop this
 	# The shop item names have a max length of 18 characters
@@ -177,5 +179,5 @@ SHOP_TEXT_SAFE_CHARS = set(
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	"abcdefghijklmnopqrstuvwxyz"
 	"0123456789"
-	" -_.:[]!?"
+	" -/_.:[]!?"
 )

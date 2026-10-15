@@ -11,7 +11,7 @@ from .options import Goal, Shopsanity
 from .parts import all_parts, all_part_list, base_starting_parts
 from .regions import get_region_connection_name
 from .utils import Constants
-from ..generic.Rules import add_rule
+from worlds.generic.Rules import add_rule
 
 if TYPE_CHECKING:
 	from .world import AC3World
