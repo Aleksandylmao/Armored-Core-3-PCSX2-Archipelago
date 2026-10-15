@@ -2,11 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from rule_builder.rules import Has
+from rule_builder.options import OptionFilter
+from rule_builder.rules import Has, HasFromList
 from .locations import get_location_name_for_mission_completed, get_location_name_for_shop, \
 	get_location_name_for_mission_rank
-from .mission import all_missions, progressive_mission, all_missions_by_order, all_ranks, name_to_mission
-from .options import Goal
+from .mission import all_missions, progressive_mission, all_missions_by_order, all_ranks, name_to_mission,mission_names
+from .options import Goal, Shopsanity
 from .parts import all_parts, all_part_list, base_starting_parts
 from .regions import get_region_connection_name
 from .utils import Constants
@@ -83,7 +84,8 @@ def set_shop_location_rules(world: AC3World) -> None:
 
 			for part in all_parts[start_index:end_index]:
 				location = world.get_location(get_location_name_for_shop(part))
-				world.set_rule(location, Has(mission.name))
+				rule = HasFromList(*mission_names, count=count+1)
+				world.set_rule(location, rule)
 
 	elif world.options.goal == Goal.option_progressive_missions:
 		for count, _ in enumerate(all_missions_by_order):

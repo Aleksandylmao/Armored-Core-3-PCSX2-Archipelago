@@ -122,7 +122,7 @@ all_legs: tuple[Legs, ...] = (
 	Legs(0x0CD, "MLH-SS/RS", bipedal),
 	Legs(0x0CE, "CLB-44-AKS", reverse_Joint),
 	Legs(0x0CF, "MLB-SS/FLUID", reverse_Joint),
-	Legs(0x0D0, "SLB-SOLID", reverse_Joint),
+	Legs(0x0D0, "CLB-SOLID", reverse_Joint),
 	Legs(0x0D1, "CLB-33-NMU", reverse_Joint),
 	Legs(0x0D2, "MLB-MX/004", reverse_Joint),
 	Legs(0x0D3, "MLF-RE/005", quadruped),

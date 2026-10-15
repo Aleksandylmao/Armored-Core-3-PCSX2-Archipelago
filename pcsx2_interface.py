@@ -4,7 +4,7 @@ from .locations import shop_location_name_to_id, get_location_id_for_mission_ran
 from .mission import all_missions, id_to_mission, STARTING_MISSION, all_ranks
 from .parts import all_parts, all_part_list
 from .pine import Pine
-from .utils import Constants, MISSION_REGIONS_BY_NAME, Menu
+from .utils import Constants, MISSION_REGIONS_BY_NAME, Menu, SHOP_TEXT_SAFE_CHARS
 
 
 class ConnectionStatus(Enum):
@@ -21,13 +21,12 @@ class AC3Interface:
 		self.completed_missions = set()
 		self.received_missions: set[int] = set()
 		self.completed_mission_ranks: set[int] = set()
-		self.received_parts: list[int] = []
+		self.received_parts: set[int] =  set()
 		self.queued_credits: int = 0
-		self.parts_shuffle: bool = False
 		self.shop_sanity: bool = False
 		self.shop_locations_bought: set[int] = set()
 		self.shop_location_added: set[int] = set()
-		self.shop_listing_per_mission: int = 5
+		self.shop_listing_per_mission: int = 5 #default value
 		self.shop_scouted: dict[int, tuple[str, str]] = {}
 		self.current_menu_value: int = 0
 
@@ -42,11 +41,9 @@ class AC3Interface:
 				self.status = ConnectionStatus.AC3_NOT_DETECTED
 			else:
 				self.status = ConnectionStatus.DISCONNECTED
-				self.disconnected()
 				return self.status
 		except Exception as e:
 			self.status = ConnectionStatus.DISCONNECTED
-			self.disconnected()
 			return self.status
 
 		return self.check_ac3_loaded()
@@ -59,17 +56,14 @@ class AC3Interface:
 				self.status = ConnectionStatus.IN_GAME
 			else:
 				self.status = ConnectionStatus.AC3_NOT_DETECTED
-				self.disconnected()
 			return self.status
 		except Exception as e:
-			self.disconnected()
 			self.status = ConnectionStatus.AC3_NOT_DETECTED
 			return self.status
 
 	def disconnect_game(self) -> None:
 		self.pine.disconnect()
 		self.status = ConnectionStatus.DISCONNECTED
-		self.disconnected()
 
 	def check_completed_missions(self) -> None:
 		for mission in all_missions:
@@ -112,15 +106,11 @@ class AC3Interface:
 	def apply_credits(self) -> None:
 		if self.queued_credits == 0:
 			return
-		if (self.in_menu(Menu.GARAGE_DEFAULT)
-				and self.pine.read_int8_signed(
-					Constants.ADDR_MISSION_COMPLETION + STARTING_MISSION.id) == 0):  # Ravens test must be completed otherwise you are not ingame
-			return
 
 		credit = self.queued_credits
-		self.queued_credits = 0
 		credit += self.pine.read_int32_signed(Constants.ADDR_CREDITS)
 		self.pine.write_int32_signed(Constants.ADDR_CREDITS, credit)
+		self.queued_credits = 0
 
 	def unlock_parts(self) -> None:
 		if not self.in_menu(Menu.GARAGE_ASSEMBLY):
@@ -159,7 +149,7 @@ class AC3Interface:
 		start_index = 0
 		end_index = min(count * self.shop_listing_per_mission, len(all_parts))
 		for part in all_parts[start_index:end_index]:
-			if not part.id in self.shop_location_added and not part.id + Constants.ADDR_SHOP in self.shop_locations_bought:
+			if not Constants.ADDR_SHOP + part.id in self.shop_location_added and not part.id + Constants.ADDR_SHOP in self.shop_locations_bought:
 				self.pine.write_int8_unsigned(Constants.ADDR_SHOP + part.id, 0x01)
 				self.shop_location_added.add(part.id + Constants.ADDR_SHOP)
 			elif part.id + Constants.ADDR_SHOP in self.shop_locations_bought:
@@ -207,7 +197,7 @@ class AC3Interface:
 		text = f"[{classification}]: {item_name}"
 		self.pine.write_string(Constants.ADDR_PART_DESCRIPTION, text)
 
-	def resolve_currently_viewed_part(self) -> int:
+	def resolve_currently_viewed_part(self) -> int | None:
 		shop_index: int = self.pine.read_int8_unsigned(Constants.ADDR_INDEX_CURRENT_SHOP_PART_MENU)
 		current_menu_part_list = all_part_list[shop_index]
 		part_in_shop: list[int] = []
@@ -217,7 +207,7 @@ class AC3Interface:
 					part_in_shop.append(part.id)
 
 		if not part_in_shop:
-			return 0
+			return None
 		selected_part_index: int = self.pine.read_int8_unsigned(Constants.ADDR_INDEX_SHOP_SELECTED_PART)
 
 		if selected_part_index >= len(part_in_shop):
@@ -231,13 +221,20 @@ class AC3Interface:
 	def in_menu(self, menu: Menu) -> bool:
 		return self.current_menu_value == menu.value
 
+	def raven_test_completed(self) -> bool:
+		return not (self.in_menu(Menu.GARAGE_DEFAULT) and self.pine.read_int8_signed(Constants.ADDR_MISSION_COMPLETION + STARTING_MISSION.id) == 0)  # Ravens test must be completed otherwise you are not ingame
+
 	def enforce_game_state(self) -> None:
 		self.read_current_menu_value()
+		if not self.raven_test_completed():
+			return
+
 		self.check_completed_missions()
-		self.check_mission_ranks()
+		#self.check_mission_ranks()
 		self.apply_credits()
 		# Shop sanity
 		if self.shop_sanity:
+			self.unlock_parts()
 			self.disable_selling_parts()
 			self.disable_adding_parts_from_shop()
 			self.check_bought_parts()
@@ -251,10 +248,15 @@ class AC3Interface:
 	def disconnected(self) -> None:
 		self.connected = False
 		self.completed_missions = set()
+		self.completed_mission_ranks = set()
 		self.received_missions: set[int] = set()
-		self.received_parts: list[int] = []
+		self.received_parts: set[int] = set()
 		self.queued_credits: int = 0
-		self.parts_shuffle: bool = False
+		self.shop_sanity: bool = False
+		self.shop_locations_bought: set[int] = set()
+		self.shop_location_added: set[int] = set()
+		self.shop_scouted: dict[int, tuple[str, str]] = {}
+		self.shop_listing_per_mission: int = 5
 
 	def set_shop_scout_data(self, scouted: dict[int, tuple[str, str]]) -> None:
 		self.shop_scouted = scouted
@@ -262,3 +264,8 @@ class AC3Interface:
 	def set_previously_bought_shop_locations(self, checked_locations: set[int]) -> None:
 		shop_location_ids = set(shop_location_name_to_id.values())
 		self.shop_locations_bought = (checked_locations & shop_location_ids)
+
+	@staticmethod
+	def sanitize_for_ps2_display(text: str, max_length: int) -> str:
+		cleaned = "".join(c if c in SHOP_TEXT_SAFE_CHARS else "?" for c in text)
+		return cleaned[:max_length]

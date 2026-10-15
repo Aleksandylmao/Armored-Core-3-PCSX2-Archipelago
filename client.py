@@ -12,7 +12,8 @@ from .mission import all_missions, all_mission_ids, progressive_mission, all_mis
 from .options import Goal
 from .parts import all_part_ids
 from .pcsx2_interface import AC3Interface, ConnectionStatus
-from .utils import Constants, sanitize_for_ps2_display
+from .utils import Constants
+from ..stardew_valley.stardew_rule import true_
 
 
 class AC3CommandProcessor(ClientCommandProcessor):
@@ -58,8 +59,7 @@ class AC3Context(CommonContext):
 				owning_player = network_item.player
 				classification = network_item.flags
 				item_name = self.item_names.lookup_in_slot(item_id, owning_player)
-				item_name = sanitize_for_ps2_display(item_name,
-				                                     max_length=18)  # matches OFFSET_SHOP_NAME's 18-char limit you already documented
+				item_name = self.interface.sanitize_for_ps2_display(item_name, max_length=18)
 				scouted[location_id] = (item_name, get_item_classification(classification))
 			self.interface.set_shop_scout_data(scouted)
 
@@ -82,7 +82,7 @@ class AC3Context(CommonContext):
 
 
 def get_goal_target_count(ctx) -> int:
-	return ctx.slot_data.get("missionsanity_goal_requirement", 20)
+	return ctx.slot_data.get("missionsanity_goal_requirement", 49)
 
 
 async def check_goal(ctx) -> None:
@@ -96,6 +96,7 @@ async def check_goal(ctx) -> None:
 
 	if reached:
 		await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
+		ctx.finished_game = True
 
 
 async def interface_sync_task(ctx):
@@ -113,10 +114,9 @@ async def interface_sync_task(ctx):
 					ctx.player_instruction("Waiting for Armored Core 3 to be loaded.")
 				elif status == ConnectionStatus.DISCONNECTED:
 					ctx.player_instruction("Waiting for PCSX2 to open.")
+
 				await asyncio.sleep(3)
 
-		except ConnectionError:
-			ctx.interface.disconnected()
 		except Exception as e:
 			if isinstance(e, RuntimeError):
 				logger.error(str(e))
@@ -150,7 +150,10 @@ async def check_game(ctx) -> None:
 		return
 
 	ctx.player_instruction("Connected and ready to play.")
+
 	ctx.interface.shop_sanity = ctx.slot_data["shopsanity"]
+	ctx.interface.shop_listing_per_mission = ctx.slot_data["shopsanity_listings_per_mission"]
+
 	if ctx.interface.shop_sanity:
 		await ctx.send_msgs([{
 			"cmd": "LocationScouts",
@@ -163,6 +166,7 @@ async def check_game(ctx) -> None:
 			| ctx.interface.shop_locations_bought
 			| ctx.interface.completed_mission_ranks
 	)
+
 	new_locations = current_locations.difference(ctx.previously_checked_locations)
 	if new_locations:
 		await ctx.send_msgs([{"cmd": "LocationChecks", "locations": list(new_locations)}])
@@ -187,7 +191,7 @@ async def check_game(ctx) -> None:
 
 		# Idempotent unlocks: safe to re-apply every reconnect
 		if item_id - Constants.ADDR_INVENTORY in all_part_ids:
-			ctx.interface.received_parts.append(item_id)
+			ctx.interface.received_parts.add(item_id)
 		elif item_id - Constants.ADDR_MISSION_COMPLETION in all_mission_ids:
 			received_missions.append(item_id - Constants.ADDR_MISSION_COMPLETION)
 
@@ -213,7 +217,6 @@ async def check_game(ctx) -> None:
 			received_missions.append(all_missions_by_order[x].id)
 
 	ctx.interface.unlock_mission(received_missions)
-	ctx.interface.unlock_parts()
 	ctx.interface.enforce_game_state()
 
 

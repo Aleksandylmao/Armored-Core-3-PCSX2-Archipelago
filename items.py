@@ -82,7 +82,7 @@ def create_missions(world: AC3World) -> list[Item]:
 def create_parts(world: AC3World) -> list[Item]:
 	itempool: list[Item] = []
 	if not world.options.shopsanity:
-		return
+		return itempool
 
 	for part in all_parts:
 		item = world.create_item(part.name)
