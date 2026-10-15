@@ -39,7 +39,7 @@ AI Disclaimer
 - How extensively were the tools used? 
 - - I let AI review my code regularly. Bug fixing not much. Asking question at the beginning pretty often, but less and less over time. 
 - How much human review was done?
-- - All the code was reviewed and written by me. If somebody else wants to review my code feel free to do so. 
+- - All the code was reviewed and written by me, besides the pine class. If somebody else wants to review my code feel free to do so. 
 
 Support
 ---
