@@ -8,6 +8,8 @@ from BaseClasses import ItemClassification
 from CommonClient import CommonContext, ClientCommandProcessor, get_base_parser, handle_url_arg, server_loop, logger, \
 	gui_enabled
 from NetUtils import ClientStatus
+from . import options
+from .mail import included_mails
 from .mission import all_missions, all_mission_ids, progressive_mission, all_missions_by_order, FINAL_MISSION
 from .options import Goal
 from .parts import all_part_ids
@@ -161,6 +163,7 @@ async def check_game(ctx) -> None:
 
 	ctx.interface.shop_sanity = ctx.slot_data["shopsanity"]
 	ctx.interface.shop_listing_per_mission = ctx.slot_data["shopsanity_listings_per_mission"]
+	ctx.interface.watched_mails = included_mails(ctx.slot_data["mailsanity"] == options.Mailsanity.option_include_challenges)
 
 	if ctx.interface.shop_sanity:
 		new_scouts = ctx.interface.shop_location_added - ctx.interface.shop_location_scouted
@@ -172,6 +175,7 @@ async def check_game(ctx) -> None:
 			ctx.interface.completed_missions
 			| ctx.interface.shop_locations_bought
 			| ctx.interface.completed_mission_ranks
+			| ctx.interface.mail_locations_read
 	)
 
 	new_locations = current_locations.difference(ctx.previously_checked_locations)

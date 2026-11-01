@@ -42,5 +42,6 @@ class AC3World(World):
 			"missionsanity_goal_requirement",
 			"credit_check_amount",
 			"shopsanity",
-			"shopsanity_listings_per_mission"
+			"shopsanity_listings_per_mission",
+			"mailsanity"
 		)

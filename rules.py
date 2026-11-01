@@ -5,7 +5,9 @@ from typing import TYPE_CHECKING
 from rule_builder.options import OptionFilter
 from rule_builder.rules import Has, HasFromList
 from .locations import get_location_name_for_mission_completed, get_location_name_for_shop, \
-	get_location_name_for_mission_rank
+	get_location_name_for_mission_rank, get_location_name_for_mail
+from .logic import requirement_rule
+from .mail import included_mails
 from .mission import all_missions, progressive_mission, all_missions_by_order, all_ranks, name_to_mission,mission_names
 from .options import Goal, Shopsanity
 from .parts import all_parts, all_part_list, base_starting_parts
@@ -34,7 +36,7 @@ def set_all_rules(world: AC3World) -> None:
 	set_shop_location_rules(world)
 	# set_mission_rank_location_rules(world)
 	set_hard_mission_rules(world)
-
+	set_mail_location_rules(world)
 
 def set_all_entrance_rules(world: AC3World) -> None:
 	menu = world.get_region(Constants.REGION_MENU)
@@ -157,3 +159,11 @@ def set_hard_mission_rules(world: AC3World) -> None:
 		add_rule(location, unlock_rule)
 #	if part_rule is not None:
 #		add_rule(location, part_rule)
+
+def set_mail_location_rules(world):
+	level = world.options.mailsanity.value
+	if level == 0:
+		return
+	for mail in included_mails(level == 2):
+		loc = world.get_location(get_location_name_for_mail(mail))
+		world.set_rule(loc, requirement_rule(world, mail.requirement))

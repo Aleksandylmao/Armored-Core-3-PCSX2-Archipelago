@@ -69,6 +69,20 @@ class ShopsanityListingsPerMission(Range):
 	range_end = 231
 	default = 5
 
+class Mailsanity(Choice):
+	"""
+	Mails become locations.
+	Challenges include:
+	-OP-Intensify mails
+	-Bonus mission
+	-Special conditions e.g. Destroy Naire Bridge, destroy the two traveling monorails in the mission.
+	More details: in docs/mails.md
+	"""
+	display_name = "Mailsanity"
+	option_none = 0
+	option_standard = 1
+	option_include_challenges = 2
+	default = 0
 
 class CreditCheckAmount(Range):
 	"""
@@ -88,3 +102,4 @@ class AC3Options(PerGameCommonOptions):
 	# mission_rank: MissionRanks
 	shopsanity: Shopsanity
 	shopsanity_listings_per_mission: ShopsanityListingsPerMission
+	mailsanity: Mailsanity

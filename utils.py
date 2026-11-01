@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Final
 
 
 class MissionRegion:
@@ -38,6 +38,7 @@ class Constants:
 	ITEM_VICTORY: str = "Victory"
 
 	REGION_MENU: str = "Menu"
+	REGION_MAIL = "Mail"
 	REGION_SHOP: str = "Shop"
 	REGION_ARENA: str = "Arena Menu"
 	REGION_MISSION_LIST: str = "Mission Menu"
@@ -70,8 +71,10 @@ class Constants:
 	ADDR_PREVIOUS_MENU: int = 0x5CB102
 	ADDR_CREDITS: int = 0x5BE030
 	ADDR_MAIL: int = 0x5BE0E0  # Bit 7 - Has been read
+	MASK_MAIL_READ: Final[int] = 0b1000_0000
 	ADDR_MISSION_COMPLETION: int = 0x5BE060
 	ADDR_MISSION_RANK: int = 0x5BE0A0
+	ADDR_STORY_PROGRESSION = 0x5BE040
 
 	ADDR_INVENTORY: int = 0x5B2021  # value = how many times you own the part, useful for some back units
 	ADDR_FUNC_DISABLE_SELL_ASSEMBLY_MENU: int = 0x002AE990  # Instruct those two function instantly return

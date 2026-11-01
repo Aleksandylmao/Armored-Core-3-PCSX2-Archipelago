@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from BaseClasses import Location
 from . import items, options
+from .mail import all_mails, Mail, included_mails
 from .mission import Mission, all_missions, FINAL_MISSION, all_ranks, Rank
 from .parts import Part, all_parts
 from .utils import Constants
@@ -54,8 +55,14 @@ shop_location_name_to_id: dict[str, int] = {}
 for part in all_parts:
 	shop_location_name_to_id[get_location_name_for_shop(part)] = get_location_id_for_shop_id(part.id)
 
+def get_location_name_for_mail(m: Mail) -> str:
+	return f"Mail: {m.name}"
+mail_location_name_to_id = {get_location_name_for_mail(m): Constants.ADDR_MAIL + m.id for m in all_mails}
+
+
+
 LOCATION_NAME_TO_ID: dict[str, int]
-LOCATION_NAME_TO_ID = {**mission_location_name_to_id, **shop_location_name_to_id, **mission_rank_location_name_to_id}
+LOCATION_NAME_TO_ID = {**mission_location_name_to_id, **shop_location_name_to_id, **mission_rank_location_name_to_id, **mail_location_name_to_id}
 
 
 def get_location_names_with_ids(location_names: list[str]) -> dict[str, int | None]:
@@ -67,7 +74,7 @@ def create_all_locations(world: AC3World) -> None:
 	# create_mission_rank_locations(world)
 	create_shop_locations(world)
 	create_events(world)
-
+	create_mail_locations(world)
 
 def create_shop_locations(world: AC3World) -> None:
 	if not world.options.shopsanity:
@@ -102,6 +109,13 @@ def create_mission_rank_locations(world: AC3World) -> None:
 				mission, rank)
 	mission_list.add_locations(location_to_add, AC3Location)
 
+def create_mail_locations(world):
+	level = world.options.mailsanity.value
+	if level == 0:
+		return
+	region = world.get_region(Constants.REGION_MAIL)
+	region.add_locations({get_location_name_for_mail(m): Constants.ADDR_MAIL + m.id
+	                      for m in included_mails(level == 2)}, AC3Location)
 
 def create_events(world: AC3World) -> None:
 	if world.options.goal == options.Goal.option_progressive_missions:

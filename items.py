@@ -38,7 +38,7 @@ item_id_to_item_name[progressive_mission.id] = progressive_mission.name
 def create_item_with_correct_classification(world: AC3World, name: str) -> AC3Item:
 	if name == Constants.ITEM_CREDIT_NAME:
 		classification = ItemClassification.filler
-	elif name in name_to_mission or name == progressive_mission.name:
+	elif name in name_to_mission or name == progressive_mission.name or name== "OP-INTENSIFY":
 		classification = ItemClassification.progression
 	else:
 		classification = ItemClassification.useful

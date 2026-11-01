@@ -2,6 +2,7 @@ import asyncio
 from enum import Enum
 
 from .locations import shop_location_name_to_id, get_location_id_for_mission_rank
+from .mail import Mail
 from .mission import all_missions, id_to_mission, STARTING_MISSION, all_ranks
 from .parts import all_parts, all_part_list
 from .pine import Pine
@@ -32,6 +33,8 @@ class AC3Interface:
 		self.current_menu_value: int = 0
 		self.was_in_shop: bool = False
 		self.shop_location_scouted: set[int] = set()
+		self.watched_mails: set[Mail] = set()
+		self.mail_locations_read: set[int] = set()
 
 	async def connect_game_async(self) -> ConnectionStatus:
 		return await asyncio.to_thread(self.connect_game)
@@ -70,6 +73,14 @@ class AC3Interface:
 	def disconnect_game(self) -> None:
 		self.pine.disconnect()
 		self.status = ConnectionStatus.DISCONNECTED
+
+	def check_mails(self):
+		for mail in self.watched_mails:  # included_mails(...) built from slot_data
+			if self.pine.read_int8_unsigned(Constants.ADDR_MAIL + mail.id) & Constants.MASK_MAIL_READ:
+				self.mail_locations_read.add(Constants.ADDR_MAIL + mail.id)
+
+	def write_story_progress(self):
+		self.pine.write_int8_unsigned(Constants.ADDR_STORY_PROGRESSION, min(len(self.completed_missions), 0x28))
 
 	def check_completed_missions(self) -> None:
 		for mission in all_missions:
@@ -249,6 +260,8 @@ class AC3Interface:
 		self.check_completed_missions()
 		#self.check_mission_ranks()
 		self.apply_credits()
+		self.write_story_progress()
+		self.check_mails()
 		# Shop sanity
 		if self.shop_sanity:
 			self.unlock_parts()
@@ -259,6 +272,8 @@ class AC3Interface:
 			if not self.patches_applied():
 				self.disable_selling_parts()
 				self.disable_adding_parts_from_shop()
+
+
 
 	def patches_applied(self) -> bool:
 		return (self.pine.read_int32_unsigned(Constants.ADDR_FUNC_DISABLE_SELL_ASSEMBLY_MENU) == Constants.INSTRUCTION_JR_RA
@@ -280,6 +295,7 @@ class AC3Interface:
 		self.shop_scouted: dict[int, tuple[str, str]] = {}
 		self.shop_listing_per_mission: int = 5
 		self.shop_location_scouted: set[int] = set()
+		self.mail_locations_read: set[int] = set()
 
 	def set_shop_scout_data(self, scouted: dict[int, tuple[str, str]]) -> None:
 		self.shop_scouted.update(scouted)
