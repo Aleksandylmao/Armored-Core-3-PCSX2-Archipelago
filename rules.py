@@ -6,9 +6,10 @@ from rule_builder.options import OptionFilter
 from rule_builder.rules import Has, HasFromList
 from .locations import get_location_name_for_mission_completed, get_location_name_for_shop, \
 	get_location_name_for_mission_rank, get_location_name_for_mail
-from .logic import requirement_rule
+from .logic import requirement_rule, mission_rule
 from .mail import included_mails
-from .mission import all_missions, progressive_mission, all_missions_by_order, all_ranks, name_to_mission,mission_names
+from .mission import all_missions, progressive_mission, all_missions_by_order, all_ranks, name_to_mission, \
+	mission_names
 from .options import Goal, Shopsanity
 from .parts import all_parts, all_part_list, base_starting_parts
 from .regions import get_region_connection_name
@@ -18,16 +19,6 @@ from worlds.generic.Rules import add_rule
 if TYPE_CHECKING:
 	from .world import AC3World
 
-HARD_MISSIONS: tuple[str, ...] = (
-	"Destroy Kisaragi Forces",
-	"Destroy Massive MT",
-	"Destroy Massive Weapon",
-	"Protect Crest Convoy",
-	"Investigate Magna Ruins",
-	"Infiltrate Rehito Lab",
-)
-HARD_MISSION_UNLOCK_REQUIREMENT = 10
-
 
 def set_all_rules(world: AC3World) -> None:
 	set_all_entrance_rules(world)
@@ -35,8 +26,8 @@ def set_all_rules(world: AC3World) -> None:
 	set_completion_condition(world)
 	set_shop_location_rules(world)
 	# set_mission_rank_location_rules(world)
-	set_hard_mission_rules(world)
 	set_mail_location_rules(world)
+
 
 def set_all_entrance_rules(world: AC3World) -> None:
 	menu = world.get_region(Constants.REGION_MENU)
@@ -49,18 +40,10 @@ def set_all_entrance_rules(world: AC3World) -> None:
 
 
 def set_mission_location_rules(world: AC3World) -> None:
-	if world.options.goal == Goal.option_progressive_missions:
-		count = 0
-		for x in range(len(all_missions_by_order)):
-			if x % Constants.UNLOCKS_PER_PROGRESSIVE_MISSION == 0:
-				count += 1
-			location = world.get_location(get_location_name_for_mission_completed(all_missions_by_order[x]))
-			world.set_rule(location, Has(progressive_mission.name, count))
-
-	elif world.options.goal == Goal.option_missionsanity:
-		for mission in all_missions:
-			location = world.get_location(get_location_name_for_mission_completed(mission))
-			world.set_rule(location, Has(mission.name))
+	# mission_rule handles progressive vs. missionsanity and the hard-mission requirement
+	for mission in all_missions:
+		location = world.get_location(get_location_name_for_mission_completed(mission))
+		world.set_rule(location, mission_rule(world, mission))
 
 
 def set_completion_condition(world: AC3World) -> None:
@@ -86,7 +69,7 @@ def set_shop_location_rules(world: AC3World) -> None:
 
 			for part in all_parts[start_index:end_index]:
 				location = world.get_location(get_location_name_for_shop(part))
-				rule = HasFromList(*mission_names, count=count+1)
+				rule = HasFromList(*mission_names, count=count + 1)
 				world.set_rule(location, rule)
 
 	elif world.options.goal == Goal.option_progressive_missions:
@@ -102,31 +85,10 @@ def set_shop_location_rules(world: AC3World) -> None:
 
 def set_mission_rank_location_rules(world: AC3World) -> None:
 	included_ranks = all_ranks[:world.options.mission_rank.value]
-	if world.options.goal == Goal.option_progressive_missions:
-		count = 0
-		for x in range(len(all_missions_by_order)):
-			if x % Constants.UNLOCKS_PER_PROGRESSIVE_MISSION == 0:
-				count += 1
-			for rank in included_ranks:
-				location = world.get_location(get_location_name_for_mission_rank(all_missions_by_order[x], rank))
-				world.set_rule(location, Has(progressive_mission.name, count))
-
-	elif world.options.goal == Goal.option_missionsanity:
-		for mission in all_missions:
-			for rank in included_ranks:
-				location = world.get_location(get_location_name_for_mission_rank(mission, rank))
-				world.set_rule(location, Has(mission.name))
-
-
-def missions_unlocked_rule(world: AC3World):
-	player = world.player
-	if world.options.goal == Goal.option_missionsanity:
-		def rule(state):
-			return sum(state.has(m.name, player) for m in all_missions) >= HARD_MISSION_UNLOCK_REQUIREMENT
-
-		return rule
-	chunks_needed = -(-HARD_MISSION_UNLOCK_REQUIREMENT // Constants.UNLOCKS_PER_PROGRESSIVE_MISSION)
-	return Has(progressive_mission.name, chunks_needed).resolve(world)
+	for mission in all_missions:
+		for rank in included_ranks:
+			location = world.get_location(get_location_name_for_mission_rank(mission, rank))
+			world.set_rule(location, mission_rule(world, mission))
 
 
 def shopsanity_part_diversity_rule(world: AC3World):
@@ -147,20 +109,7 @@ def shopsanity_part_diversity_rule(world: AC3World):
 	return rule
 
 
-def set_hard_mission_rules(world: AC3World) -> None:
-	if world.options.goal == Goal.option_progressive_missions:
-		return
-	unlock_rule = missions_unlocked_rule(world)
-	# part_rule = shopsanity_part_diversity_rule(world) if world.options.shopsanity else None
-
-	for mission_name in HARD_MISSIONS:
-		mission = name_to_mission[mission_name]
-		location = world.get_location(get_location_name_for_mission_completed(mission))
-		add_rule(location, unlock_rule)
-#	if part_rule is not None:
-#		add_rule(location, part_rule)
-
-def set_mail_location_rules(world):
+def set_mail_location_rules(world: AC3World) -> None:
 	level = world.options.mailsanity.value
 	if level == 0:
 		return
