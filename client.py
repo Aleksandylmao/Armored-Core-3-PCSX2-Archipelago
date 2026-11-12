@@ -163,7 +163,8 @@ async def check_game(ctx) -> None:
 
 	ctx.interface.shop_sanity = ctx.slot_data["shopsanity"]
 	ctx.interface.shop_listing_per_mission = ctx.slot_data["shopsanity_listings_per_mission"]
-	ctx.interface.watched_mails = included_mails(ctx.slot_data["mailsanity"] == options.Mailsanity.option_include_challenges)
+	ctx.interface.watched_mails = included_mails(ctx.slot_data["mailsanity"] == options.Mailsanity.option_include_challenges
+												 , bool(ctx.slot_data["shopsanity"]))
 
 	if ctx.interface.shop_sanity:
 		new_scouts = ctx.interface.shop_location_added - ctx.interface.shop_location_scouted

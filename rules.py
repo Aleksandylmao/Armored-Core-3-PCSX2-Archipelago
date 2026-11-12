@@ -10,7 +10,7 @@ from .logic import requirement_rule, mission_rule
 from .mail import included_mails
 from .mission import all_missions, progressive_mission, all_missions_by_order, all_ranks, name_to_mission, \
 	mission_names
-from .options import Goal, Shopsanity
+from .options import Goal, Shopsanity, Mailsanity
 from .parts import all_parts, all_part_list, base_starting_parts
 from .regions import get_region_connection_name
 from .utils import Constants
@@ -110,9 +110,9 @@ def shopsanity_part_diversity_rule(world: AC3World):
 
 
 def set_mail_location_rules(world: AC3World) -> None:
-	level = world.options.mailsanity.value
-	if level == 0:
+	mailsanity_value = world.options.mailsanity.value
+	if mailsanity_value == 0:
 		return
-	for mail in included_mails(level == 2):
+	for mail in included_mails(mailsanity_value == world.options.mailsanity.option_include_challenges,bool(world.options.shopsanity)):
 		loc = world.get_location(get_location_name_for_mail(mail))
 		world.set_rule(loc, requirement_rule(world, mail.requirement))

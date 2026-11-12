@@ -110,12 +110,13 @@ def create_mission_rank_locations(world: AC3World) -> None:
 	mission_list.add_locations(location_to_add, AC3Location)
 
 def create_mail_locations(world):
-	level = world.options.mailsanity.value
-	if level == 0:
+	mailsanity_value = world.options.mailsanity.value
+	if mailsanity_value == 0:
 		return
 	region = world.get_region(Constants.REGION_MAIL)
 	region.add_locations({get_location_name_for_mail(m): Constants.ADDR_MAIL + m.id
-	                      for m in included_mails(level == 2)}, AC3Location)
+	                      for m in included_mails(mailsanity_value == world.options.mailsanity.option_include_challenges
+												  ,bool(world.options.shopsanity))}, AC3Location)
 
 def create_events(world: AC3World) -> None:
 	if world.options.goal == options.Goal.option_progressive_missions:

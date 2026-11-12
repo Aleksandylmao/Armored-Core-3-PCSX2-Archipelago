@@ -83,9 +83,7 @@ def requirement_rule(world: AC3World, req: Requirement) -> Rule:
 		return count_rule(world, subset, req.n)
 	if isinstance(req, WithPart):
 		rule = mission_rule(world, req.mission)
-		if world.options.shopsanity:  # without shopsanity no part items exist, see notes
-			rule = rule & Has(req.part)
-		return rule
+		return rule & Has(req.part)
 	if isinstance(req, AllOf):
 		return And(*(requirement_rule(world, r) for r in req.requirements))
 	if isinstance(req, Unsupported):

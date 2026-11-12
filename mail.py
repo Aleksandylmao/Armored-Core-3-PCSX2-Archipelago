@@ -95,6 +95,15 @@ def is_supported(req: Requirement) -> bool:
 
     return True
 
+
+def requires_part(req: Requirement) -> bool:
+	if isinstance(req, WithPart):
+		return True
+	if isinstance(req, AllOf):
+		return any(requires_part(r) for r in req.requirements)
+	return False
+
+
 #------------------------------------------------------------------------
 @dataclass(frozen=True)
 class Mail:
@@ -193,7 +202,9 @@ assert len(id_to_mail) == len(all_mails), "duplicate mail id"
 assert len({m.name for m in all_mails}) == len(all_mails), "duplicate mail name (location names must be unique)"
 
 
-def included_mails(include_challenges: bool) -> list[Mail]:
+def included_mails(include_challenges: bool, shopsanity: bool) -> list[Mail]:
 	"""Mails that become locations (and that the client watches)."""
 	return [m for m in all_mails
-            if is_supported(m.requirement) and (include_challenges or not m.challenge)]
+	        if is_supported(m.requirement)
+	        and (include_challenges or not m.challenge)
+	        and (shopsanity or not requires_part(m.requirement))]
