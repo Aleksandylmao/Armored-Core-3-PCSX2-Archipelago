@@ -1,9 +1,7 @@
 # WIP Mails in the Armored Core 3 Randomizer
 
 In Armored Core 3 you get mails (messages) from clients and other pilots while you play.
-With the **Mailsanity** option turned on, every mail you receive counts as a **check**: the moment the mail arrives in your inbox, a randomized item is sent out for it.
-
-You don't have to read the mail. It only has to arrive.
+With the **Mailsanity** option turned on, every mail you receive counts as a **check**: the moment you read the mail, a randomized item is sent out for it.
 
 ## The Mailsanity option
 
@@ -141,12 +139,12 @@ These mails exist in the game, but they are not checks right now, whatever you c
 | OP-INTENSIFY - Radar | Win in the Arena against Thunder House with OP-INTENSIFY | Arena |
 | OP-INTENSIFY - Booster | Win in the Arena against Ace with OP-INTENSIFY | Arena |
 | OP-INTENSIFY - Blade Range | Win in the Arena against Exile with OP-INTENSIFY | Arena |
-| Global Cortex - Advancement Reward | Reach an A rank in the Arena| Mission ranks are not part of the randomizer yet. |
-| Global Cortex - Advancement Reward (2) | Reach an A or B rank in the Arena| Ranks |
-| Global Cortex - Advancement Reward (3) | Reach an A, B or C rank in the Arena | Ranks |
-| Global Cortex - Advancement Reward (4) | Reach an A, B, C or D rank in the Arena | Ranks |
-| Crest - Good Luck | Reach A, B or C 1 - 6 Rank in the Arena| Ranks |
-| Crest - Crest Product Sponsor | Reach A, B, C or D 1-11 Rank in the Arena| Ranks |
-| Royal Mist - (No Subject) | Defeat any A Rank opponent in the Arena | Ranks |
+| Global Cortex - Advancement Reward | Reach an A rank in the Arena| Arena Ranks |
+| Global Cortex - Advancement Reward (2) | Reach an A or B rank in the Arena| Arena Ranks |
+| Global Cortex - Advancement Reward (3) | Reach an A, B or C rank in the Arena | Arena Ranks |
+| Global Cortex - Advancement Reward (4) | Reach an A, B, C or D rank in the Arena | Arena Ranks |
+| Crest - Good Luck | Reach A, B or C 1 - 6 Rank in the Arena| Arena Ranks |
+| Crest - Crest Product Sponsor | Reach A, B, C or D 1-11 Rank in the Arena| Arena Ranks |
+| Royal Mist - (No Subject) | Defeat any A Rank opponent in the Arena | Arena Ranks |
 
 ---
