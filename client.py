@@ -1,9 +1,9 @@
 import asyncio
 import multiprocessing
 import traceback
+import time
 from argparse import Namespace
 from collections.abc import Sequence
-
 from BaseClasses import ItemClassification
 from CommonClient import CommonContext, ClientCommandProcessor, get_base_parser, handle_url_arg, server_loop, logger, \
 	gui_enabled
@@ -15,6 +15,10 @@ from .options import Goal
 from .parts import all_part_ids
 from .pcsx2_interface import AC3Interface, ConnectionStatus
 from .utils import Constants
+
+
+RESEND_INTERVAL = 5.0  # seconds before an unconfirmed location is sent again
+
 
 class AC3CommandProcessor(ClientCommandProcessor):
 	def __init__(self, ctx):
@@ -36,7 +40,7 @@ class AC3Context(CommonContext):
 		self.previously_processed_items = -1
 		self.processed_items = 0
 		self.slot_data = ""
-		self.previously_checked_locations = set()
+		self.location_sent_at: dict[int, float] = {}
 		self.shop_locations_scouted = False
 
 	async def shutdown(self):
@@ -48,18 +52,18 @@ class AC3Context(CommonContext):
 			self.interface.default_variables_values()
 			self.slot_data = args["slot_data"]
 			self.connection_state = "request"
-			self.previously_checked_locations = set(args["checked_locations"])
-			self.interface.set_previously_bought_shop_locations(self.previously_checked_locations)
+			self.interface.set_previously_bought_shop_locations(set(args["checked_locations"]))
 			self.processed_items = 0
 			self.previously_processed_items = -1
 			self.shop_locations_scouted = False
+			self.location_sent_at = {}
+			self.finished_game = False  # announce the goal again after a reconnect, the server ignores duplicates so this should be fine
+			self.interface.set_previously_bought_shop_locations(set(args["checked_locations"]))
 
 		elif cmd == "Retrieved":
 			if self.connection_state == "requested":
 				retrieved = args["keys"].get(f"ac3_processed_{self.team}_{self.slot}")
 				self.previously_processed_items = retrieved if retrieved is not None else -1
-				checked = args["keys"].get(f"ac3_checked_{self.team}_{self.slot}") or []
-				self.previously_checked_locations.update(checked)
 				self.connection_state = "ready"
 		elif cmd == "LocationInfo":
 			scouted = {}
@@ -179,17 +183,16 @@ async def check_game(ctx) -> None:
 			| ctx.interface.mail_locations_read
 	)
 
-	new_locations = current_locations.difference(ctx.previously_checked_locations)
-	if new_locations:
-		await ctx.send_msgs([{"cmd": "LocationChecks", "locations": list(new_locations)}])
-		await ctx.send_msgs([{
-			"cmd": "Set",
-			"key": f"ac3_checked_{ctx.team}_{ctx.slot}",
-			"default": {},
-			"want_reply": False,
-			"operations": [{"operation": "replace", "value": list(ctx.interface.completed_missions)}],
-		}])
-		ctx.previously_checked_locations.update(new_locations)
+	#HOW WAS I THAT STUPID I DIDN'T KNOW THAT IT WOULD KEEP AN CHECKED LOCATIONS
+	# AND I JUST IMPLEMENTED SOMETHING ON MY OWN HOW WAS I THAT STUPID AHHHHHH anyway this works now
+	# if anyone reads say Hi to me, I hope you enjoy my pain and suffering
+	now = time.monotonic()
+	locations_due_to_send = [loc for loc in current_locations.difference(ctx.checked_locations)
+							 if now -ctx.location_sent_at.get(loc,-RESEND_INTERVAL) >= RESEND_INTERVAL]
+	if locations_due_to_send:
+		await ctx.send_msgs([{"cmd": "LocationChecks", "locations": list(locations_due_to_send)}])
+		for loc in locations_due_to_send:
+			ctx.location_sent_at[loc] = now
 	await check_goal(ctx)
 
 	# Receive and apply items

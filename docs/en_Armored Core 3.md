@@ -6,6 +6,11 @@ Mission unlocks and Parts are shuffled into the multiworld item pool.
 ## What is the goal of Armored Core 3 when randomized?
 - In Progressive Missions mode, complete Infiltrate Layered Hub. 
 - In Mission-Sanity mode, complete a number of missions you can set between 1 and 49.
+## What items and locations get shuffled?
+
+Each mission completed is a location where you can find a check.
+With Mailsanity turned on each piece of Mail read is a location.
+With Shopsanity on, each part listing can be purchased for items separate from the ones you already own.
 
 ## Which items can be in another player's world?
 Missions or Progressive Missions depending on your setting, as well as Parts and Credits as Filler.

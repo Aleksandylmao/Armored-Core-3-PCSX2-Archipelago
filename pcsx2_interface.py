@@ -1,4 +1,5 @@
 import asyncio
+import time
 from enum import Enum
 
 from .locations import shop_location_name_to_id, get_location_id_for_mission_rank
@@ -7,6 +8,9 @@ from .mission import all_missions, id_to_mission, STARTING_MISSION, all_ranks
 from .parts import all_parts, all_part_list
 from .pine import Pine
 from .utils import Constants, MISSION_REGIONS_BY_NAME, Menu, SHOP_TEXT_SAFE_CHARS
+
+
+PURCHASE_GRACE_SECONDS = 3.0  # how long after leaving the shop a purchase is still accepted
 
 
 class ConnectionStatus(Enum):
@@ -31,7 +35,7 @@ class AC3Interface:
 		self.shop_listing_per_mission: int = 5 #default value
 		self.shop_scouted: dict[int, tuple[str, str]] = {}
 		self.current_menu_value: int = 0
-		self.was_in_shop: bool = False
+		self.last_in_shop: float = float("-inf")
 		self.shop_location_scouted: set[int] = set()
 		self.watched_mails: set[Mail] = set()
 		self.mail_locations_read: set[int] = set()
@@ -151,9 +155,11 @@ class AC3Interface:
 		self.pine.write_int32_unsigned(Constants.ADDR_INSTR_DISABLE_ADDING_TO_INVENTORY, 0x0)
 
 	def check_bought_parts(self) -> None:
-		in_shop = self.in_menu(Menu.GARAGE_SHOP)
-		purchases_possible = in_shop or self.was_in_shop #one extra tick just to be safe
-		self.was_in_shop = in_shop
+		now = time.monotonic()
+		if self.in_menu(Menu.GARAGE_SHOP):
+			self.last_in_shop = now
+		#A small time window is better than "one extra tick", I'M IMPROVING yay
+		purchases_possible = now - self.last_in_shop <= PURCHASE_GRACE_SECONDS
 
 		count = len(self.completed_missions)
 		start_index = 0
