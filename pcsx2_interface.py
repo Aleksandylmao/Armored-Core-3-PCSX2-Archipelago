@@ -188,41 +188,6 @@ class AC3Interface:
 	def disable_adding_parts_from_shop(self) -> None:
 		self.pine.write_int32_unsigned(Constants.ADDR_INSTR_DISABLE_ADDING_TO_INVENTORY, 0x0)
 
-	def check_bought_parts(self) -> None:
-		now = time.monotonic()
-		if self.in_menu(Menu.GARAGE_SHOP):
-			self.last_in_shop = now
-		#A small time window is better than "one extra tick", I'M IMPROVING yay
-		purchases_possible = now - self.last_in_shop <= PURCHASE_GRACE_SECONDS
-
-		count = len(self.completed_missions)
-		start_index = 0
-		end_index = min(count * self.shop_listing_per_mission, len(all_parts))
-		for part in all_parts[start_index:end_index]:
-			if part.name == "DUMMY":
-				continue
-			location = part.id + Constants.ADDR_SHOP
-			if location in self.shop_location_added and not location in self.shop_locations_bought:
-				if self.pine.read_int8_signed(location) == 0x0:
-					if purchases_possible:
-						self.shop_locations_bought.add(location)
-					else:
-						self.pine.write_int8_unsigned(location, 0x1)
-
-	def unlock_shop_parts(self) -> None:
-		count = len(self.completed_missions)
-		start_index = 0
-		end_index = min(count * self.shop_listing_per_mission, len(all_parts))
-		for part in all_parts[start_index:end_index]:
-			if not Constants.ADDR_SHOP + part.id in self.shop_location_added and not part.id + Constants.ADDR_SHOP in self.shop_locations_bought:
-				self.pine.write_int8_unsigned(Constants.ADDR_SHOP + part.id, 0x01)
-				self.shop_location_added.add(part.id + Constants.ADDR_SHOP)
-			elif part.id + Constants.ADDR_SHOP in self.shop_locations_bought:
-				self.pine.write_int8_unsigned(Constants.ADDR_SHOP + part.id, 0x0)
-
-		for part in all_parts[end_index:len(all_parts)]:
-			self.pine.write_int8_unsigned(Constants.ADDR_SHOP + part.id, 0x0)
-
 	def sync_shop_listings(self) -> None:
 		now = time.monotonic()
 		if self.in_menu(Menu.GARAGE_SHOP):
@@ -379,8 +344,7 @@ class AC3Interface:
 		# Shop sanity
 		if self.shop_sanity:
 			self.unlock_parts()
-			self.check_bought_parts()
-			self.unlock_shop_parts()
+			self.sync_shop_listings()
 			self.change_shop_part_description()
 			self.change_shop_part_name()
 			if not self.patches_applied():
