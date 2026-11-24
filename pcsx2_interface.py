@@ -36,6 +36,7 @@ class AC3Interface:
 		self.shop_location_added: set[int] = set()
 		self.shop_listing_per_mission: int = 5 #default value
 		self.shop_scouted: dict[int, tuple[str, str]] = {}
+		self.shop_name_cache: dict[int, bytes] = {}  # address -> name bytes we wrote last
 		self.current_menu_value: int = 0
 		self.last_in_shop: float = float("-inf")
 		self.last_shop_sync: float = float("-inf")
@@ -271,7 +272,9 @@ class AC3Interface:
 
 	def change_shop_part_name(self) -> None:
 		if not self.in_menu(Menu.GARAGE_SHOP):
-			return
+			self.shop_name_cache.clear() #The game doesn't reload the shop name every time we enter it,
+			return						 # but I want to be safe and this won't tank the performance, may also be important for other armored core games idk
+
 
 		# 1. Where does each scouted name go and which bytes is it?
 		names: dict[int, bytes] = {}  # address -> bytes
@@ -406,6 +409,7 @@ class AC3Interface:
 		self.shop_scouted: dict[int, tuple[str, str]] = {}
 		self.shop_listing_per_mission: int = 5
 		self.shop_location_scouted: set[int] = set()
+		self.shop_name_cache: dict[int, bytes] = {}
 		self.mail_locations_read: set[int] = set()
 		self.last_shop_sync = float("-inf")
 		self.last_in_mail_menu = float("-inf")
