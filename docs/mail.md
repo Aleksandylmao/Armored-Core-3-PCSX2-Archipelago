@@ -38,8 +38,8 @@ With the **Mailsanity** option turned on, every mail you receive counts as a **c
 | Union - Hypothesis | Complete **Destroy Escaping MT** |
 | Union - To Our Comrades | Complete **Disable Security System** |
 | Union - To Our Comrades (2) | Complete **Assault Crest Facility** |
-| Union - Operation Failed | **Fail** Disable Security System (on purpose is fine) |
-| Union - Operation Failed (2) | **Fail** Assault Crest Facility (on purpose is fine) |
+| Union - Operation Failed | **Fail** Disable Security System  |
+| Union - Operation Failed (2) | **Fail** Assault Crest Facility |
 | Mirage - Request for Help | Complete **Destroy Massive Weapon**  |
 | Mirage - The Controller | Complete **Investigate Magna Ruins**  |
 | Laine Meyers - Necessity | Complete **Destroy Massive MT** |
@@ -132,13 +132,13 @@ These mails exist in the game, but they are not checks right now, whatever you c
 |---|---|---|
 | Global Cortex - Top-Ranked Pilot | Win against Ace in the Arena | The Arena is not part of the randomizer yet. |
 | Global Cortex - Reward | Win against Adieu in the Arena | Arena |
-| Ace - (No Title) | Win in the Arena against Ace / BB | Arena |
-| Royal Mist - (No Title) | Win in the Arena against Vice | Arena |
-| Valkyrie - (No Title) | Win in the Arena against Valkyrie | Arena |
-| Fixer - (No Subject) | Win in the Arena against Pylon | Arena |
-| OP-INTENSIFY - Radar | Win in the Arena against Thunder House with OP-INTENSIFY | Arena |
-| OP-INTENSIFY - Booster | Win in the Arena against Ace with OP-INTENSIFY | Arena |
-| OP-INTENSIFY - Blade Range | Win in the Arena against Exile with OP-INTENSIFY | Arena |
+| Ace - (No Title) | Win against Ace / BB in the Arena | Arena |
+| Royal Mist - (No Title) | Win against Vice in the Arena | Arena |
+| Valkyrie - (No Title) | Wi against Valkyrien in the Arena | Arena |
+| Fixer - (No Subject) | Win against Pylon in the Arena | Arena |
+| OP-INTENSIFY - Radar | Win against Thunder House with OP-INTENSIFY in the Arena  | Arena |
+| OP-INTENSIFY - Booster | Win Ace with OP-INTENSIFY in the Arena against | Arena |
+| OP-INTENSIFY - Blade Range | Win against Exile with OP-INTENSIFY in the Arena | Arena |
 | Global Cortex - Advancement Reward | Reach an A rank in the Arena| Arena Ranks |
 | Global Cortex - Advancement Reward (2) | Reach an A or B rank in the Arena| Arena Ranks |
 | Global Cortex - Advancement Reward (3) | Reach an A, B or C rank in the Arena | Arena Ranks |
