@@ -23,4 +23,4 @@ You'll have to check the Armored Core 3 client to know the actual items.
 The client will update the Mission list with what you have access to. If you are currently in the Mission list when sent a mission, you have to exit and re-enter for it to update.
 Also, your inventory will be updated if you receive parts, you may need to renter the Assembly menu. 
 ## Notes and Limitations
-- The mission menu restructuring, shop description and Optional Part name edit require a connection to the client and a connection to the server.
+- The mission menu restructuring, shop description and Optional Part name edit code requires a connection to the client and a connection to the server.
