@@ -5,9 +5,9 @@ It is the sixth entry in the Armored Core series.
 
 Available to download in the [releases](https://github.com/Aleksandylmao/Armored-Core-3-PCSX2-Archipelago/releases)  section!
 
+## [Setup Guide](docs/setup_en.md)
 ## [Randomizer Info](docs/en_Armored%20Core%203.md)
-
-[Setup Guide](docs/setup_en.md)
+[Mail Logic](docs/mail.md)
 -----
 ### Prerequisites:
 - [Archipelago](https://github.com/ArchipelagoMW/Archipelago/releases/latest)
