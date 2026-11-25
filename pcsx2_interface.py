@@ -5,7 +5,7 @@ from enum import Enum
 from .locations import shop_location_name_to_id, get_location_id_for_mission_rank
 from .mail import Mail
 from .mission import all_missions, id_to_mission, STARTING_MISSION, all_ranks, all_mission_ids
-from .parts import all_parts, all_part_list, all_part_ids
+from .parts import all_parts, all_part_list, all_part_ids, all_optionals
 from .pine import Pine
 from .utils import Constants, MISSION_REGIONS_BY_NAME, Menu, SHOP_TEXT_SAFE_CHARS
 
@@ -13,7 +13,7 @@ from .utils import Constants, MISSION_REGIONS_BY_NAME, Menu, SHOP_TEXT_SAFE_CHAR
 PURCHASE_GRACE_SECONDS = 3.0  # how long after leaving the shop a purchase is still accepted
 OUTSIDE_MENU_GRACE_SECONDS = 2.0  # outside the shop the listings are only re-checked this often
 PART_ID_SPAN = max(all_part_ids) + 1   # 0x350: the tables are indexed by part id
-
+NAME_TABLE_SHARED_WITH_ASSEMBLY = {all_part_list.index(all_optionals)}
 
 class ConnectionStatus(Enum):
 	DISCONNECTED = 0
@@ -45,6 +45,7 @@ class AC3Interface:
 		self.shop_location_scouted: set[int] = set()
 		self.watched_mails: set[Mail] = set()
 		self.mail_locations_read: set[int] = set()
+		self.shared_names_overwritten: bool = False
 
 	async def connect_game_async(self) -> ConnectionStatus:
 		return await asyncio.to_thread(self.connect_game)
@@ -77,6 +78,10 @@ class AC3Interface:
 			return self.status
 
 	def disconnect_game(self) -> None:
+		try:
+			self.restore_shared_names()
+		except Exception:
+			pass
 		self.pine.disconnect()
 		self.status = ConnectionStatus.DISCONNECTED
 
@@ -85,7 +90,7 @@ class AC3Interface:
 		now = time.monotonic()
 		if self.in_menu(Menu.MAIL):
 			self.last_in_mail_menu = now
-		mail_read_possible = now - self.last_in_shop <= PURCHASE_GRACE_SECONDS
+		mail_read_possible = now - self.last_in_mail_menu <= PURCHASE_GRACE_SECONDS
 
 		if not self.sync_due(now, mail_read_possible):
 			return
@@ -231,19 +236,19 @@ class AC3Interface:
 		return (self.sync_due(now,in_shop_window)
 				or listed_count != self.last_listed_count) # a mission was completed
 
-
 	def sync_due(self, now, in_shop_window):
 		return in_shop_window or now - self.last_shop_sync >= OUTSIDE_MENU_GRACE_SECONDS
 
 	def change_shop_part_name(self) -> None:
 		if not self.in_menu(Menu.GARAGE_SHOP):
+			self.restore_shared_names()
 			self.shop_name_cache.clear() #The game doesn't reload the shop name every time we enter it,
 			return						 # but I want to be safe and this won't tank the performance, may also be important for other armored core games idk
-
 
 		# 1. Where does each scouted name go and which bytes is it?
 		names: dict[int, bytes] = {}  # address -> bytes
 		addresses_by_category: dict[int, list[int]] = {}
+		shared_addresses: set[int] = set()
 		for part_list_index, part_list in enumerate(all_part_list):
 			for part_index, part in enumerate(part_list):
 				scouted = self.shop_scouted.get(part.id + Constants.ADDR_SHOP)
@@ -255,6 +260,8 @@ class AC3Interface:
 							name_index * Constants.OFFSET_SHOP_NAME)
 				names[address] = item_name[:Constants.MAX_PART_NAME_LENGTH].encode("ascii") + b"\x00"
 				addresses_by_category.setdefault(part_list_index, []).append(address)
+				if part_list_index in NAME_TABLE_SHARED_WITH_ASSEMBLY:
+					shared_addresses.add(address)
 
 		# 2. Did the game overwrite our names? Check the first and last name of every category.
 		# If one is different, forget the whole category so it gets written again below.
@@ -269,8 +276,20 @@ class AC3Interface:
 		# 3. Write only the names that are new / were forgotten
 		for address, data in names.items():
 			if self.shop_name_cache.get(address) != data:
+				if address in shared_addresses:
+					self.shared_names_overwritten = True
 				self.pine.write_bytes(address, data)
 				self.shop_name_cache[address] = data
+
+	def restore_shared_names(self) -> None:
+		if not self.shared_names_overwritten:
+			return
+		for category in NAME_TABLE_SHARED_WITH_ASSEMBLY:
+			for part_index, part in enumerate(all_part_list[category]):
+				name_index = self.get_shop_name_index(category, part_index)
+				address = Constants.LIST_SHOP_PART_NAMES[category] + name_index * Constants.OFFSET_SHOP_NAME
+				self.pine.write_string(address, part.name)
+		self.shared_names_overwritten = False
 
 	def get_shop_name_index(self, shop_index: int, part_index: int) -> int:
 		if shop_index != 8: #What in the Magic Number did I do.. Anyway this is some part shop idk which one but it is...
