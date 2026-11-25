@@ -76,7 +76,7 @@ class Mailsanity(Choice):
 	-OP-Intensify mails
 	-Bonus mission
 	-Special conditions e.g. Destroy Naire Bridge, destroy the two traveling monorails in the mission.
-	More details: https://github.com/Aleksandylmao/Armored-Core-3-PCSX2-Archipelago/blob/Mail/docs/mail.md
+	More details: https://github.com/Aleksandylmao/Armored-Core-3-PCSX2-Archipelago/blob/master/docs/mail.md
 	"""
 	display_name = "Mailsanity"
 	option_none = 0
