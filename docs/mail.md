@@ -22,7 +22,7 @@ With the **Mailsanity** option turned on, every mail you receive counts as a **c
 |---|---|
 | The Controller - No. 0824-FK3203 | Nothing. It arrives at the beginning. |
 | Laine Meyers - Welcome Raven | Nothing. It arrives at the beginning. |
-| Global Cortex - Congratulations | Pass the AC Test in the garage. It is always available.  You might need to achieve a specific Rank not 100% sure.|
+| Global Cortex - Congratulations | Achieve Rank S in AC Test 1. It is in the garage and always available.  I'm not 100% sure if it is S Rank cause I always got an S Rank or C Rank and didn't had the time to check it. |
 
 ### Mails for playing one specific mission
 
