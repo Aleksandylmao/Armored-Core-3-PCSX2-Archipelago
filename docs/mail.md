@@ -1,6 +1,6 @@
-# WIP Mails in the Armored Core 3 Randomizer
+# Mails in the Armored Core 3 Randomizer
 
-In Armored Core 3 you get mails (messages) from clients and other pilots while you play.
+In Armored Core 3 you get mails from clients and other pilots while you play.
 With the **Mailsanity** option turned on, every mail you receive counts as a **check**: the moment you read the mail, a randomized item is sent out for it.
 
 ## The Mailsanity option
@@ -24,7 +24,7 @@ With the **Mailsanity** option turned on, every mail you receive counts as a **c
 | Laine Meyers - Welcome Raven | Nothing. It arrives at the beginning. |
 | Global Cortex - Congratulations | Pass the AC Test in the garage. It is always available.  You might need to achieve a specific Rank not 100% sure.|
 
-### Mails for finishing one specific mission
+### Mails for playing one specific mission
 
 | Mail | What you need |
 |---|---|
@@ -46,8 +46,8 @@ With the **Mailsanity** option turned on, every mail you receive counts as a **c
 | Union - Will | Complete **Infiltrate Rehito Lab** |
 | Regina - Thanks | Complete **Defend Testing Grounds** |
 | Gaidoz - We'll Meet Again | Complete **Defend the Arena** |
-| Union - New Part (3) | Complete **Infiltrate Layered Hub** (the last mission) |
-| ??? - Request | Complete **Infiltrate Layered Hub** (the last mission) |
+| Union - New Part (3) | Complete **Infiltrate Layered Hub** |
+| ??? - Request | Complete **Infiltrate Layered Hub**  |
 
 ### Mails for completing a number of different missions
 
