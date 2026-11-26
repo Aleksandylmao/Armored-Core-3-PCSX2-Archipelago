@@ -5,9 +5,9 @@ It is the sixth entry in the Armored Core series.
 
 Available to download in the [releases](https://github.com/Aleksandylmao/Armored-Core-3-PCSX2-Archipelago/releases)  section!
 
+## [Setup Guide](docs/setup_en.md)
 ## [Randomizer Info](docs/en_Armored%20Core%203.md)
-
-[Setup Guide](docs/setup_en.md)
+[Mail Logic](docs/mail.md)
 -----
 ### Prerequisites:
 - [Archipelago](https://github.com/ArchipelagoMW/Archipelago/releases/latest)
@@ -22,7 +22,7 @@ Acknowledgements
 Thank you to these projects for helping me make this Archipelago Implementation possible:
 - The Archipelago Core Team and Contributors
 - evilwb's [pypine](https://github.com/evilwb/pypine)
-- [thatbard's](https://retroachievements.org/user/thatbard) [Armored Core 3 RetroAchievements](https://retroachievements.org/game/3308) for providing some Memory Addresses
+- [thatbard's](https://retroachievements.org/user/thatbard) [Armored Core 3 RetroAchievements](https://retroachievements.org/game/3308) for providing many Memory Addresses
 - [Armored Core APWorld](https://github.com/JustinMarshall98/Armored-Core-PSX-Archipelago/releases)  which got me to play the older games again and inspired me to make this APWorld 
 
 AI Disclaimer
@@ -44,7 +44,7 @@ AI Disclaimer
 Support
 ---
 Have suggestions, comments or issues?
-Please get in touch in the Armored Core 3 thread of the future-games-design forum in the official Archipelago Discord Server.
+Please get in touch in the Armored Core 3 thread of the custom-games in the official Archipelago Discord Server.
 
 ---
 Pls give the other Armored Core APWorlds also a try.
